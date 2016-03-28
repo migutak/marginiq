@@ -1,0 +1,45 @@
+<!-- Main content -->
+<a href="#/offers">Forex Spot</a> | <a href="#/offersswap">Forex Swap</a> | <a href="#/offersforward">Forex Forward</a> | <b>Money Market</b>
+<h3>Offers Made : MM</h3>
+<section class="content">
+<i class="fa fa-arrow-left"></i> <a href="#/homemm">Home</a>
+<div class="cloading"></div>
+    <div class="row">
+        <div class="col-md-12">
+                <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                <tr>
+                                    <th>View</th>
+                                    <th>Deal ID</th>
+                                    <th>Customer</th>
+                                    <th>Type</th>
+                                    <th>Nominal Amount</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Tenure</th>
+                                    <th>Rate Offered</th>
+                                    <th>Total Interest</th>
+                                    <th>Tax</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="ord in mm_offers">
+                                    <td><a class="btn btn-info" href="#/editmmOffer/{{ord.offerid}}"><i class="fa fa-pencil"></i></a></td>
+                                    <td>{{ord.orderidfk}}</td>
+                                    <td>{{ord.usernamefk}}</td>
+                                    <td>{{ord.mmtypebank}}</td>
+                                    <td>{{ord.ccy}} {{ord.orderamount | number}}</td>
+                                    <td>{{ord.mmfrom}}</td>
+                                    <td>{{ord.mmto}}</td>
+                                    <td>{{ord.tenuredays}}D</td>
+                                    <td>{{ord.fixedrate}}%</td>
+                                    <td>{{ord.totalinterest}}</td>
+                                    <td>{{ord.tax}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.table-responsive -->
+        </div>
+    </div>
+</section>

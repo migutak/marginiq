@@ -1,0 +1,37 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+                <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Order Date</th>
+                                    <th>BankName</th>
+                                    <th>CCY Pair</th>
+                                    <th>Buy/Sell</th>
+                                    <th>Deal Details</th>
+                                    <th>Settlement Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="ord in toconfirmoffers">
+                                    <td><a class="btn btn-warning" href="#/confirmoffer/{{ord.offerid}}"><i class="fa fa-check"></i>Confirm</a></td>
+                                    <td>{{ord.orderdate}}</td>
+                                    <td>{{ord.offeredby}}</td>
+                                    <td>{{ord.ccypair}}</td>
+                                    <td>{{ord.buysell}}</td>
+                                    <td>
+                                        <p>{{ord.recbank}} Amount: {{ord.ccypair | limitTo:ord.limitnum}} {{ord.orderamount | number}}</p>
+                                        <p>Rate: {{ord.offeredrate | number}}</p>
+                                        <p>{{ord.paybank}} Amount: {{ord.ccypair | limitTo:-ord.limitnum}} {{ord.settleamount | number}}</p>
+                                    </td>
+                                    <td>{{ord.settlementdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.table-responsive -->
+        </div>
+    </div>
+</section>

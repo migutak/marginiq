@@ -1,0 +1,116 @@
+<!-- Main content -->
+<section class="container">
+<i class="fa fa-arrow-left"></i> <a href="#/homemoneymarket">Back</a>
+<div class="row">
+            	<div class="cloading"></div>
+                <form ng-submit="accept()" method="post" id="mmorderform" class="form-horizontal">
+                	
+	                <div class="form-group">
+				        <label class="col-xs-3 control-label">Type</label>
+				        <div class="col-xs-5 selectContainer">
+				            <input type="text" class="form-control" ng-model="acceptoffermm.mmtype" disabled>
+				        </div>
+				    </div>
+				    
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">From:</label>
+				    	<div class="col-xs-5 selectContainer">
+                            <input type="text" class="form-control" id="mmfrom" name="mmfrom" ng-model="acceptoffermm.mmfrom" required/>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">To:</label>
+				    	<div class="col-xs-5 selectContainer">
+                            <input type="text" class="form-control" id="mmto" name="mmto" ng-model="acceptoffermm.mmto" required/>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				        <label class="col-xs-3 control-label">Tenure Days</label>
+				        <div class="col-xs-5 selectContainer">
+				            <input type="text" class="form-control" ng-model="acceptoffermm.tenuredays" disabled>
+				        </div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Amount</label>
+				    	<div class="col-xs-5 selectContainer">
+				    		<div class="input-group">
+				    			<div class="input-group-addon">
+                                    {{acceptoffermm.ccy}}
+                                </div>
+				    			<input type="text" class="form-control" ng-model="acceptoffermm.orderamount" disabled>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Offered Rate %</label>
+				    	<div class="col-xs-5 selectContainer">
+						    <input type="text" class="form-control" ng-model="acceptoffermm.fixedrate" disabled>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Total Interest</label>
+				    	<div class="col-xs-5 selectContainer">
+				    		<div class="input-group">
+				    			<div class="input-group-addon">
+                                    {{acceptoffermm.ccy}}
+                                </div>
+				    			<input type="text" class="form-control" ng-model="acceptoffermm.totalinterest_disp" disabled>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Withholding Tax</label>
+				    	<div class="col-xs-5 selectContainer">
+				    		<div class="input-group">
+				    			<div class="input-group-addon">
+                                    {{acceptoffermm.ccy}}
+                                </div>
+				    			<input type="text" class="form-control" ng-model="acceptoffermm.tax_disp" disabled>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Net Interest</label>
+				    	<div class="col-xs-5 selectContainer">
+				    		<div class="input-group">
+				    			<div class="input-group-addon">
+                                    {{acceptoffermm.ccy}}
+                                </div>
+				    			<input type="text" class="form-control" ng-model="acceptoffermm.netinterest" disabled>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Net Amount</label>
+				    	<div class="col-xs-5 selectContainer">
+				    		<div class="input-group">
+				    			<div class="input-group-addon">
+                                    {{acceptoffermm.ccy}}
+                                </div>
+				    			<input type="text" class="form-control" ng-model="acceptoffermm.netamount_disp" disabled>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="form-group">
+				    	<label class="col-xs-3 control-label">Offered By (Bank)</label>
+				    	<div class="col-xs-5 selectContainer">
+						    <input type="text" class="form-control" ng-model="acceptoffermm.offeredby" disabled>
+				    	</div>
+				    </div>
+				    
+                    <div class="form-group">
+                    	<label class="col-xs-3 control-label">Bank Comment</label>
+                    	<div class="col-xs-5 selectContainer">
+                    		<textarea class="form-control" rows="3" placeholder="Enter ..." ng-model="acceptoffermm.bankcomment" disabled></textarea>
+                    	</div>
+                    </div>
+                    <div class="form-group">
+                    <label class="col-xs-3 control-label"></label>
+                    	<div class="col-xs-5 selectContainer">
+                    		<button type="submit" class="btn btn-info">Accept</button>
+                    		<a class="btn btn-danger" href="#/homemoneymarket">Cancel</a> 
+                    	</div>
+                    </div>
+                </form>
+            </div>
+</section>

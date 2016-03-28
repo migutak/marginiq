@@ -1,0 +1,94 @@
+            <h3>
+              Confirmed FxSpot Deals
+              <small>{{}}</small>
+            </h3>
+<div class="container">
+            <div class="callout callout-info" ng-repeat="c in confirmedoffers">
+              <h4>{{c.usernamefk}}</h4>
+              <p>{{c.ccypair}} | {{c.buysellbank}}</p>
+              <p></p>
+              <p>Order amount :{{c.orderamount | number:2}}</p>
+            <div class="comment-text">
+                Actions
+            </div>
+            <div class="action">
+                <button type="button" class="btn btn-primary btn-xs" title="Edit">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button type="button" class="btn btn-success btn-xs" title="Approved">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-danger btn-xs" title="Delete">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </div>
+            </div>
+            
+    <!--<div class="row">
+        <div class="panel panel-default widget">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    
+                </h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    <a href="http://www.jquery2dotnet.com/2013/10/google-style-login-page-desing-usign.html">
+                                        Google Style Login Page Design Using Bootstrap</a>
+                                    <div class="mic-info">
+                                        By: <a href="#">Bhaumik Patel</a> on 2 Aug 2013
+                                    </div>
+                                </div>
+                                <div class="comment-text">
+                                    Awesome design
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="btn btn-primary btn-xs" title="Edit">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-xs" title="Approved">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-xs" title="Delete">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    <a href="http://bootsnipp.com/BhaumikPatel/snippets/Obgj">Admin Panel Quick Shortcuts</a>
+                                    <div class="mic-info">
+                                        By: <a href="#">Bhaumik Patel</a> on 11 Nov 2013
+                                    </div>
+                                </div>
+                                <div class="comment-text">
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh
+                                    euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="btn btn-primary btn-xs" title="Edit">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-xs" title="Approved">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-xs" title="Delete">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>-->
+</div>
