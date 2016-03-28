@@ -349,9 +349,22 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
+				    confirmed_forward_bo: function() {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_forward_bo',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				      		console.log('confirmed_forward_bo ',response.data);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
 				    confirmed_swap_offers: function(x) {
 				      var promise = $http({
-				      		method:'POST',
+				      		method:'post',
 				      		url:'/confirmed_swap_offers',
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {id:x}
@@ -365,7 +378,7 @@ app.factory('ordersService', function($http){
 				    },
 				    confirmed_mm_offers: function(x) {
 				      var promise = $http({
-				      		method:'POST',
+				      		method:'get',
 				      		url:'/confirmed_mm_offer',
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {id:x}
