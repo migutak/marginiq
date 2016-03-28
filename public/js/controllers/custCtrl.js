@@ -711,8 +711,28 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	
 });
 
-app.controller('custpaymentsCtrl', function($scope){
-	
+app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
+	$scope.payments_spot = [];
+	$scope.payments_swap = [];
+	$scope.payments_forward = [];
+	$scope.payments_mm = [];
+
+    $scope.payments_forward_notification = 0;
+
+    payments_forward();
+
+    socketio.on('payments_forward', function(msg){
+        payments_forward();
+       // Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homemm">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+    });
+
+
+	function payments_forward(){
+	    ordersService.payments_forward().then(function(d){
+	        $scope.confirmedforwardoffers = d.data.data
+	        $scope.payments_forward_notification = d.data.data.length;
+	    }) 
+	}
 });
 
 app.controller('sheduleCtrl', function($scope, $stateParams){

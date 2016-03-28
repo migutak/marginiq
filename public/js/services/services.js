@@ -507,6 +507,19 @@ app.factory('ordersService', function($http){
 				      			console.log("Error: "+error);
 				      });
 				      return promise;
+				    },
+				    payments_forward: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_forward_bo',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:{id:x}
+				      }).success(function (response) {
+				        		return response;
+				      }).error(function(error){
+				      			console.log("Error: "+error);
+				      });
+				      return promise;
 				    }
 	};
 	
