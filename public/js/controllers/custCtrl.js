@@ -443,14 +443,15 @@ app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$s
 			$scope.booking.payamount = $scope.booking.orderamount;
 		}
 		else if($scope.booking.buysellbank == 'BUY' && $scope.booking.sellorderamount>0){
-			//$scope.booking.rec = "REC";
-			//$scope.booking.pay = "PAY";
+			$scope.booking.rec = "PAY";
+			$scope.booking.pay = "REC";
 			$scope.lim = -3;
 			$scope.booking.recamount = $scope.booking.settlementamount;
 			$scope.booking.payamount = $scope.booking.orderamount;
 		}
 		else if($scope.booking.buysellbank == 'BUY' && $scope.booking.buyorderamount>0){
-			//$scope.booking.rec = "REC";
+			$scope.booking.rec = "PAY";
+			$scope.booking.pay = "REC";
 			$scope.lim = -3;
 			$scope.booking.recamount = $scope.booking.orderamount;
 			$scope.booking.payamount = $scope.booking.settlementamount;
@@ -813,8 +814,8 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 		            }).error(function () {
 		            	 $scope.dataLoading = false;
 		                alert("Error making new FxForward order");
-		                //$scope.newforwardorder = {};
-						//$state.go('homeforward');
+		                $scope.newforwardorder = {};
+						$state.go('homeforward');
 		            });	
 				}
 	

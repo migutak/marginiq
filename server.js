@@ -683,7 +683,7 @@ app.post('/new_forward_offer', function(req,res){
 //
 
 app.post('/add_forward_order', function(req,res){
-    console.log('Data to be saved ...',req.body);
+    //console.log('Data to be saved ...',req.body);
         var orderid = req.body.orderid;
         var forwardid = req.body.forwardid;
         var usernamefk = req.body.usernamefk;
@@ -1048,6 +1048,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_forward_deal ok',
                 });
                 connection.release();
+                io.emit('accept_forward_deal', {title:'Deal accepted'});
             });
       });
     });

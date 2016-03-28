@@ -342,7 +342,7 @@ app.factory('ordersService', function($http){
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {id:x}
 				      }).success(function (response) {
-				      		console.log(response);
+				      		//console.log(response);
 				        	return response;
 				      }).error(function(error){
 				      		alert("Error: "+ error);
@@ -355,7 +355,7 @@ app.factory('ordersService', function($http){
 				      		url:'/confirmed_forward_bo',
 				      		headers: {'Content-Type': 'application/json'}
 				      }).success(function (response) {
-				      		console.log('confirmed_forward_bo ',response.data);
+				      		//console.log('confirmed_forward_bo ',response.data);
 				        	return response;
 				      }).error(function(error){
 				      		alert("Error: "+ error);
