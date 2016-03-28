@@ -321,6 +321,20 @@ app.factory('ordersService', function($http){
 			        	      });
 			        	      return promise;
 			          },
+			          to_confirm_forward: function(x) {
+			        	      var promise = $http({
+			        	      		method:'GET',
+			        	      		url:'/to_confirm_forward',
+			        	      		headers: {'Content-Type': 'application/json'},
+			        	      		params:	 {id:x}
+			        	      }).success(function (response) {
+			        	      		//console.log(response.data);
+			        	        	return response;
+			        	      }).error(function(error){
+			        	      		alert("Error: "+ error);
+			        	      });
+			        	      return promise;
+			          },
 			          confirmed_offers: function(x) {
 				      var promise = $http({
 				      		method:'GET',

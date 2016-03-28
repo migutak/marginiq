@@ -1030,6 +1030,27 @@ app.post('/add_forward_order', function(req,res){
             });
       });
     });
+
+    app.post('/accept_forward_deal', function(req, res){
+      var offerid = req.body.offerid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_forward set confirm = ? where offerid = ?' ,['Confirmed',offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_forward_deal ok',
+                });
+                connection.release();
+            });
+      });
+    });
     
     app.post('/accept_offer', function(req, res){
     	var offerid = req.body.offerid;
@@ -1247,6 +1268,25 @@ app.post('/add_forward_order', function(req,res){
     			connection.release();
     		});
     	});
+    });
+
+    app.get('/to_confirm_forward', function(req, res){
+        var id = req.param('id');
+        connectionpool.getConnection(function(err, connection) {
+            connection.query(
+                    'select offerid,orderidfk,spot,margin,finalrate,o.settlementdate,offeredby,settlementamount,settlementamountccy,offerdate,offeredby,'+
+                    'ccypair,orderdate,buysell,buysellbank,buyorderamount,sellorderamount,buyorderamount+sellorderamount orderamount,currentstatus,custcomment,ordertypefk,status'+
+                    ',if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,if(buysell=? AND buyorderamount>0,?,?) recbank,if(buysell=? AND buyorderamount>0,?,?) paybank,startdate,freqnum,freq,'+
+                    'usernamefk from offers_forward o left join Forwardorders f on o.orderindex = f.orderindex where status = ? and confirm = ? and buysellbank = ?'
+
+                    ,['BUY','REC','PAY','BUY','PAY','REC','Accepted','Sent','SELL'],function(err, rows,field){
+                
+                res.send({
+                    data:rows
+                });
+                connection.release();
+            });
+        });
     });
     
     app.get('/accepted_offers', function(req, res){

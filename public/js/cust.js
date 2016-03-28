@@ -125,6 +125,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/confirmoffer/:offerid",
 		templateUrl : "templates/confirmbooking.html",
 		controller : 'confirmofferCtrl'
+	}).state('confirmofferforward', {
+		url : "/confirmofferforward/:offerid",
+		templateUrl : "templates/confirmbookingforward.html",
+		controller : 'confirmofferforwardCtrl'
 	}).state('confirmoffermm', {
 		url : "/confirmoffermm/:offerid",
 		templateUrl : "templates/confirmbookingmm.html",

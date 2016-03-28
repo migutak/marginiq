@@ -397,6 +397,111 @@ app.controller('confirmofferCtrl', function($scope, $stateParams,$http,$state, o
 	               }, true);
 })
 
+app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$state, ordersService) {
+    var offerid = $stateParams.offerid;
+    $scope.reject = {};
+    $scope.showAccept = false;
+    $scope.showReject = false;
+    $scope.schedules = [];
+    
+    ordersService.forwardofferdetails(offerid).then(function(d){
+    	//console.log(d.data.data[0]);
+		$scope.booking = d.data.data[0];
+
+		var freqnum = d.data.data[0].freqnum;
+    	var freq = d.data.data[0].freq;
+
+    	for(i=1;i<=freqnum;i++){
+    		if(freq == "Monthly"){
+    			$scope.schedules.push({
+    				settlementdate : $scope.booking.startdate+' month '+i
+    			});
+    		}else if(freq == "Weekly"){
+    			$scope.schedules.push({
+	    			settlementdate : $scope.booking.startdate+' week '+i
+	    		});
+    		}else{
+    			$scope.schedules.push({
+	    			settlementdate : $scope.booking.startdate
+	    		});
+    		}
+    		
+    	}
+
+		if($scope.booking.buysellbank == 'SELL' && $scope.booking.buyorderamount>0){
+			$scope.lim = 3;
+			$scope.booking.rec = "PAY";
+			$scope.booking.pay = "REC";
+			$scope.booking.recamount = $scope.booking.orderamount;
+			$scope.booking.payamount = $scope.booking.settlementamount;
+		}
+		else if($scope.booking.buysellbank == 'SELL' && $scope.booking.sellorderamount>0){
+			$scope.lim = 3;
+			$scope.booking.rec = "PAY";
+			$scope.booking.pay = "REC";
+			$scope.booking.recamount = $scope.booking.settlementamount;
+			$scope.booking.payamount = $scope.booking.orderamount;
+		}
+		else if($scope.booking.buysellbank == 'BUY' && $scope.booking.sellorderamount>0){
+			//$scope.booking.rec = "REC";
+			//$scope.booking.pay = "PAY";
+			$scope.lim = -3;
+			$scope.booking.recamount = $scope.booking.settlementamount;
+			$scope.booking.payamount = $scope.booking.orderamount;
+		}
+		else if($scope.booking.buysellbank == 'BUY' && $scope.booking.buyorderamount>0){
+			//$scope.booking.rec = "REC";
+			$scope.lim = -3;
+			$scope.booking.recamount = $scope.booking.orderamount;
+			$scope.booking.payamount = $scope.booking.settlementamount;
+		}
+	})
+	
+	$scope.accept = function(){
+		//accept booked deal
+		$http({
+		   method: 'POST',
+		   url: '/accept_forward_deal',
+		   headers: {'Content-Type': 'application/json'},
+		   data : {offerid:offerid}
+		}).success(function (data) {
+		    alert("Deal Accepted");
+			$state.go('custconfirmations_forward');
+		}).error(function (err) {
+		    alert("Error accepting deal ", err);
+		    $state.go('custconfirmations_forward');
+		});	
+		
+	}
+	
+	$scope.reject = function(){
+		//reject booked deal
+		$http({
+		    method: 'POST',
+		    url: '/reject_forward_deal',
+		    headers: {'Content-Type': 'application/json'},
+		    data : {id:offerid,reason:$scope.reject.rejectreason}
+		 }).success(function (data) {
+		    alert("Deal Rejected Submitted");
+			$state.go('custconfirmations_forward');
+		 }).error(function (error) {
+		    alert("Error rejecting deal ",err);
+		    $state.go('custconfirmations_forward');
+		});	
+		
+	}
+	
+				$scope.$watch("booking.confirm", function (newval) {
+	               if(newval=="Reject"){
+	                    $scope.showAccept = false;
+    					$scope.showReject = true;
+	                 }else{
+	              	 	$scope.showAccept = true;
+    					$scope.showReject = false;
+	                 }
+	               }, true);
+})
+
 app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,ordersService){
 	var username = window.sessionStorage.getItem('username');
 	console.log('newswaporderCtrl '+username);
@@ -761,3 +866,13 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 				})
 	
 });
+
+app.controller('custconfirmations_forwardCtrl', function($scope,ordersService){
+	$scope.toconfirmoffers = [];
+	//$scope.Data.pagetitle = 'FxSpot Confirmations';
+	ordersService.to_confirm_forward(1).then(function(d){
+		//console.log(d.data.data);
+		$scope.toconfirmoffers = d.data.data;
+	})	
+});
+

@@ -311,7 +311,7 @@ app.controller('bookdealCtrl',function($scope,$http,$state,$stateParams,ordersSe
     	}
 });
 
-app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,ordersService){
+app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,$state,ordersService){
 	$scope.booking = {};
     var offerid = $stateParams.offerid;
     $scope.schedules = [];
