@@ -342,7 +342,7 @@
         app.get('/get_a_forward_offer/:offerid', function(req,res){
             var offerid = req.params.offerid;
             connectionpool.getConnection(function(err, connection) {
-                    connection.query('select offerid,orderidfk,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,'+
+                    connection.query('select offerid,orderidfk,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,buyorderamount+sellorderamount orderamount,if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,'+
                             'ccypair,orderdate,buyorderamountccy,buyorderamount,sellorderamountccy,sellorderamount,buysell,buysellbank,currentstatus,recipient,bankcomment, custcomment,ordertypefk from offers_forward f left outer join Forwardorders o on f.orderidfk = o.orderid where offerid = ? ',[offerid], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
@@ -1136,6 +1136,29 @@ app.post('/add_forward_order', function(req,res){
                 connection.release();
             });
     	});
+    });
+
+    app.post('/confirm_offer_forward', function(req, res){
+        var offerid = req.body.offerid;
+        var sysdate = req.body.sysdate;
+        console.log(offerid);
+        connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_forward set confirm = ?, confirmdate = ? where offerid = ?' ,['Sent',sysdate,offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'confirm_offer_forward ok',
+                });
+                connection.release();
+            });
+        });
     });
     
     app.get('/banks', function(req,res){

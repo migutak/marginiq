@@ -311,19 +311,40 @@ app.controller('bookdealCtrl',function($scope,$http,$state,$stateParams,ordersSe
     	}
 });
 
-app.controller('bookdealforwardCtrl', function($scope,$stateParams,ordersService){
+app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,ordersService){
 	$scope.booking = {};
     var offerid = $stateParams.offerid;
+    $scope.schedules = [];
 
     ordersService.forwardofferdetails(offerid).then(function(d){
     	console.log(d.data.data[0])
     	$scope.booking = d.data.data[0];
+    	var freqnum = d.data.data[0].freqnum;
+    	var freq = d.data.data[0].freq;
+
+    	for(i=1;i<=freqnum;i++){
+    		if(freq == "Monthly"){
+    			$scope.schedules.push({
+    				settlementdate : $scope.booking.startdate+' month '+i
+    			});
+    		}else if(freq == "Weekly"){
+    			$scope.schedules.push({
+	    			settlementdate : $scope.booking.startdate+' week '+i
+	    		});
+    		}else{
+    			$scope.schedules.push({
+	    			settlementdate : $scope.booking.startdate
+	    		});
+    		}
+    		
+    	}
+    	console.log($scope.schedules);
+
     	if($scope.booking.buysellbank == 'SELL' && $scope.booking.buyorderamount>0){
     			$scope.lim = 3;
     			$scope.booking.rec = "PAY";
     			$scope.booking.pay = "REC";
     			$scope.recamount = $scope.booking.orderamount;
-    			$scope.payamount = $scope.booking.settleamount;
     			$scope.booking.buysellrec = $scope.booking.buysell;
     			$scope.booking.buysellrec2 = $scope.booking.buysellbank;
     		}else if($scope.booking.buysellbank == 'SELL' && $scope.booking.sellorderamount>0){
@@ -331,7 +352,6 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,ordersService
     			$scope.booking.rec = "REC";
     			$scope.booking.pay = "PAY";
     			$scope.recamount = $scope.booking.orderamount;
-    			$scope.payamount = $scope.booking.settleamount;
     			$scope.booking.buysellrec = $scope.booking.buysellbank;
     			$scope.booking.buysellrec2 = $scope.booking.buysell;
     		}else if($scope.booking.buysellbank == 'BUY' && $scope.booking.sellorderamount>0){
@@ -339,7 +359,6 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,ordersService
     			$scope.booking.rec = "REC";
     			$scope.booking.pay = "PAY";
     			$scope.recamount = $scope.booking.orderamount;
-    			$scope.payamount = $scope.booking.settleamount;
     			$scope.booking.buysellrec = $scope.booking.buysell;
     			$scope.booking.buysellrec2 = $scope.booking.buysellbank;
     		}else if($scope.booking.buysellbank == 'BUY' && $scope.booking.buyorderamount>0){
@@ -347,7 +366,6 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,ordersService
     			$scope.booking.rec = "PAY";
     			$scope.booking.pay = "REC";
     			$scope.recamount = $scope.booking.orderamount;
-    			$scope.payamount = $scope.booking.settleamount;
     			$scope.booking.buysellrec = $scope.booking.buysellbank;
     			$scope.booking.buysellrec2 = $scope.booking.buysell;
     		}
@@ -356,12 +374,12 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,ordersService
     $scope.custconfirm = function(){
     	$http({
     		method : 'post',
-    		url:'/confirm_deal',
+    		url:'/confirm_offer_forward',
     		headers: {'Content-Type': 'application/json'},
     		data : {offerid:offerid, sysdate:new Date()}
     	}).success(function(data){
     		alert("Deal Successfully Booked ");
-    		$state.go('acceptedoffers');
+    		$state.go('acceptedofferforward');
     	}).error(function(err){
     		alert("Error booking a deal",err);
     	})
