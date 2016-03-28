@@ -1,0 +1,40 @@
+<b>Forex Spot <span class="label label-info">{{spotnotification}}</span></b> | 
+<a href="#/paymentswap">Forex Swap <span class="label label-info">{{swapnotification}}</span></a> | 
+<a href="#/paymentforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
+<a href="#/paymentmm"> Money Markets <span class="label label-info">{{mmnotification}}</span></a>
+<h3>FxSpot Payments</h3>
+<div class="row">
+        <div class="panel panel-default widget">
+            
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="c in custpay">
+                        <div class="row">
+                            
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    <a href="">
+                                        {{c.buysell}}
+                                    </a>
+                                    <div class="mic-info">
+                                        {{c.ccypair}}: <a href="">Order amount: {{c.orderamount | number:0}}</a> on {{c.orderdate}}
+                                    </div>
+                                </div>
+                                <div class="comment-text">
+                                    Settlement Date : {{c.settlementdate}}
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="btn btn-primary btn-xs" title="Pay" ng-click="pay(c.offerid)">
+                                        <span class="glyphicon glyphicon-pencil"></span> Pay
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>

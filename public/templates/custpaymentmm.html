@@ -1,0 +1,44 @@
+<a href="#/payments">Forex Spot <span class="label label-info">{{spotnotification}}</span></a> | 
+<a href="#/paymentswap">Forex Swap <span class="label label-info">{{swapnotification}}</span></a> | 
+<a href="#/paymentforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
+<b> Money Markets <span class="label label-info">{{forwardnotification}}</span></b>
+<h3>MM Payments</h3>
+<div class="cloading"></div>
+<div class="row">
+        <div class="panel panel-default widget">
+            
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="c in custmmpay">
+                        <div class="row">
+                            
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    <a href="">
+                                        {{c.buysell}} {{c.ccypair}}
+                                    </a>
+                                    <div class="mic-info">
+                                        <p>Deposit Amount: {{c.ccy}} {{c.orderamount | number:2}}</p>
+                                        <p>Fixed Rate %: {{c.fixedrate}}</p>
+                                        <p>From: {{c.mmfrom}}</p>
+                                        <p>To: {{c.mmto}}</p>
+                                    </div>
+                                </div>
+                                <div class="comment-text">
+                                    Deal Number : {{c.orderidfk}}
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="btn btn-primary btn-xs" title="Pay" ng-click="pay(c.offerid)">
+                                        <span class="glyphicon glyphicon-pencil"></span> Pay
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
