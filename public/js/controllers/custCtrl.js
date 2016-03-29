@@ -1044,7 +1044,7 @@ app.controller('confirmoffermmCtrl', function($scope, $stateParams,$http,$state,
 	               }, true);
 })
 
-app.controller('offeracceptswapCtrl', function($scope, $stateParams, $http,$state, ordersService) {
+app.controller('offeracceptswapCtrl', function($scope, $stateParams,$timeout,$state, ordersService) {
     var orderid = $stateParams.orderidfk;
 	var offerid = $stateParams.offerid;
 	
@@ -1083,18 +1083,15 @@ app.controller('offeracceptswapCtrl', function($scope, $stateParams, $http,$stat
 	});
 	
 	$scope.accept = function(){
-		$http({
-		    method: 'post',
-		    url: '/accept_swap_offer',
-		    headers: {'Content-Type': 'application/json'},
-		    data : {orderid:$scope.acceptofferswap.orderidfk,offerid:offerid}
-		    }).success(function (data) {
-		      alert('Offer '+offerid+' Accepted');
-			  $state.go('homeswap');
-		    }).error(function (error) {
-		       alert("Error when accepting offer");
-			   $state.go('homeswap');
-		    });
+		$scope.dataLoading = true;
+		$timeout(function() {
+			ordersService.accept_swap_offer($scope.acceptofferswap.orderidfk).then(function(response){});
+			ordersService.accept_swap_offer2(offerid).then(function(response){
+				alert('Offer '+offerid+' Accepted');
+				$state.go('homeswap');
+			});
+		}, 5000);
+		
 	}
 })
 

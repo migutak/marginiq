@@ -770,6 +770,32 @@
             });
         });
 
+        app.get('/accepted_swap_offers', function(req,res){
+            var domain = req.query.username;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,offers_swap.neardate,offeredby,offers_swap.fardate,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,usernamefk'+
+                        ',ccypair,orderdate,farfinal,buysell,buysellbank,currentstatus,recipient,ordertypefk,status,if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount '+
+                        'from offers_swap left join Swaporders on offers_swap.orderindex = Swaporders.orderindex where status = ? and confirm = ? and offeredby =? ',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC','Accepted','Pending',domain], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
         app.get('/get_a_currency/:ccy', function(req,res){
             var ccy = req.params.ccy;
             connectionpool.getConnection(function(err, connection) {
@@ -985,8 +1011,30 @@ app.post('/add_forward_order', function(req,res){
       });
     });
 
+    app.post('/confirm_swap_offer', function(req, res){
+      var offerid = req.body.offerid;
+      var date = req.body.date;
+
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('update offers_swap set confirm=?, confirmdate=? where offerid=?' ,['Sent',date,offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'confirm_swap_offer successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
     app.post('/updateorderswap', function(req, res){
-        console.log(req.body);
       var orderindex = req.body.orderindex;
       connectionpool.getConnection(function(err, connection) {
             connection.query('Update Swaporders set currentstatus = ? where orderid = ?' ,['OfferReceived',orderindex], function(err, rows, fields) {
@@ -1001,6 +1049,49 @@ app.post('/add_forward_order', function(req,res){
                 res.send({
                     result: 'success',
                     data:   'updateordermm successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+
+    app.post('/accept_swap_offer', function(req, res){
+      var orderid = req.body.orderid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update Swaporders set currentstatus = ? where orderid = ?' ,['Taken',orderid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_swap_offer successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/accept_swap_offer2', function(req, res){
+      var offerid = req.body.offerid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_swap set status = ? where offerid = ?' ,['Accepted',offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_swap_offer successful',
                 });
                 connection.release();
             });

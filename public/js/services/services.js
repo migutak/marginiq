@@ -300,11 +300,11 @@ app.factory('ordersService', function($http){
 			                		method:'GET',
 			                		url:'/accepted_swap_offers',
 			                		headers: {'Content-Type': 'application/json'},
-			                		params:	 {id:username}
+			                		params:	 {username:username}
 			                }).success(function (response) {
 			                  	return response;
 			                }).error(function(error){
-			                		alert("Error: "+ error);
+			                	alert("Error: "+ error);
 			                });
 			                return promise;
 			           },
@@ -576,6 +576,32 @@ app.factory('ordersService', function($http){
 				      		});
 				      return promise;
 				    },
+				    accept_swap_offer: function(orderid) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/accept_swap_offer',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderid:orderid}
+				      }).success(function (response) {
+				        	return response;
+				      }).error(function(error){
+				      		console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    accept_swap_offer2: function(offerid) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/accept_swap_offer2',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{offerid:offerid}
+				      }).success(function (response) {
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
 				    accepted_mm_offers: function(domain) {
 				      var promise = $http({
 				      		method:'GET',
@@ -639,7 +665,7 @@ app.factory('ordersService', function($http){
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:{offerid:offerid}
 				      }).success(function (response) {
-				      			console.log(response);
+				      			//console.log(response);
 				        		return response;
 				      		}).error(function(error){
 				      			console.log("Error: "+error);

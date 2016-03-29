@@ -231,6 +231,7 @@ app.controller('acceptedoffersCtrl', function($scope,ordersService){
 	$scope.forwardoffers = [];
 
 	var username = window.sessionStorage.getItem('username');
+	var domain = window.sessionStorage.getItem('bankdomain');
 	
 	ordersService.accepted_offers(username).then(function(d){
 		//console.log(d.data.data[0]);
@@ -246,11 +247,11 @@ app.controller('acceptedoffersCtrl', function($scope,ordersService){
 		$scope.forwardoffers = d.data.data;
 	})
 	
-	/*ordersService.accepted_swap_offers(username).then(function(d){
-		console.log(d.data.data);
-		$scope.swapoffers = d.data;
+	ordersService.accepted_swap_offers(domain).then(function(d){
+		//console.log(d.data.data);
+		$scope.swapoffers = d.data.data;
 		$scope.swapnotification = d.data.length;
-	})*/
+	})
 })
 
 app.controller('bookdealCtrl',function($scope,$http,$state,$stateParams,ordersService){
@@ -689,6 +690,31 @@ app.controller('bookmmdealCtrl',function($scope,$http,$state,$stateParams,orders
 		    }).error(function (error) {
 		        alert("Error booking a deal");
 				$state.go('acceptedoffermm');
+		    });
+	}
+});
+
+app.controller('bookswapdealCtrl', function($scope, $stateParams, $interval,$state,$http, ordersService) {
+    $scope.booking = {};
+	var offerid = $stateParams.offerid;
+	
+	ordersService.offerdetails_swap(offerid).then(function(d){
+		$scope.booking = d.data.data[0];
+		//console.log(d.data.data[0]);
+	})
+	
+	$scope.custconfirm = function(){
+		$http({
+		    method: 'post',
+		    url: '/confirm_swap_offer',
+		    headers: {'Content-Type': 'application/json'},
+		    data : {offerid: offerid, date: new Date()}
+		    }).success(function (data) {
+		     	alert("FxSwap Deal Successfully Booked");
+				$state.go('acceptedofferswap');
+		    }).error(function (error) {
+		        alert("Error: "+error);
+				$state.go('acceptedofferswap');
 		    });
 	}
 });
