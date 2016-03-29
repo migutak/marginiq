@@ -728,7 +728,7 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	$scope.payments_spot = [];
 	$scope.payments_swap = [];
 	$scope.payments_forward = [];
-	$scope.payments_mm = [];
+	$scope.custmmpay = [];
 
     $scope.payments_forward_notification = 0;
     $scope.payments_spot_notification = 0;
@@ -737,6 +737,8 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 
     payments_forward();
     payments_spot();
+    payments_mm();
+    payments_swap();
 
     socketio.on('payments_forward', function(msg){
         payments_forward();
@@ -760,6 +762,39 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	        $scope.payments_spot_notification = d.data.data.length;
 	    }) 
 	}
+
+	function payments_mm(){
+	    ordersService.payments_mm_confirm().then(function(d){
+	        $scope.custmmpay = d.data.data
+	        $scope.payments_mm_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_swap(){
+	    ordersService.confirmed_offers().then(function(d){
+	        $scope.payments_swap = d.data.data
+	        $scope.payments_swap_notification = d.data.data.length;
+	    }) 
+	}
+    
+    $scope.pay = function(idx){
+    	var deleteUser = $window.confirm('Are you sure you want to confirm payment?');
+	    if(deleteUser){
+	     	$http({
+			   method: 'POST',
+			   url: '/pay_mm_deal',
+			   headers: {'Content-Type': 'application/json'},
+			   data : {id:idx}
+			}).success(function (data) {
+			    alert('MM Payment Confirmed. Thank You');
+				ordersService.payments_mm_confirm().then(function(d){
+			    	$scope.custmmpay = d.data
+			    })
+			}).error(function (error) {
+			    alert("Error making MM payment");
+			});	
+	    }
+    }
 });
 
 app.controller('sheduleCtrl', function($scope, $stateParams){
@@ -957,3 +992,57 @@ app.controller('offeracceptmmCtrl', function($scope, $stateParams, $http, $state
 		})
 	}
 });
+
+app.controller('custconfirmationsmmCtrl', function($scope,ordersService){
+	$scope.toconfirmoffers = [];
+	//$scope.Data.pagetitle = 'MM Confirmations';
+	$scope.mmnotification = 0;
+	ordersService.to_confirm_offers_mm(1).then(function(d){
+		$scope.toconfirmoffers = d.data.data;
+		$scope.mmnotification = d.data.data.length;
+	})
+	
+})
+
+app.controller('confirmoffermmCtrl', function($scope, $stateParams,$http,$state, ordersService) {
+	//$scope.Data.pagetitle = 'MM Confirmations';
+    var offerid = $stateParams.offerid;
+    $scope.reject = {};
+    $scope.showAccept = false;
+    $scope.showReject = false;
+    
+    ordersService.offerdetails_mm(offerid).then(function(d){
+    	//console.log(d.data[0]);
+		$scope.booking = d.data.data[0];
+    })
+    
+    $scope.accept = function(){
+		//accept booked deal
+		$http({
+		   method: 'POST',
+		   url: '/accept_mm_deal',
+		   headers: {'Content-Type': 'application/json'},
+		   data : {offerid:offerid}
+		}).success(function (data) {
+		    alert("Deal Accepted");
+			$state.go('custconfirmations_mm');
+		}).error(function (error) {
+		    alert("Error accepting deal");
+			$state.go('custconfirmations_mm');
+		});	
+	}
+	
+	$scope.reject = function(){
+		alert('... will be rejected');
+	}
+    			$scope.$watch("booking.confirm", function (newval) {
+	               if(newval=="Reject"){
+	                    $scope.showAccept = false;
+    					$scope.showReject = true;
+	                 }else{
+	              	 	$scope.showAccept = true;
+    					$scope.showReject = false;
+	                 }
+	               }, true);
+})
+

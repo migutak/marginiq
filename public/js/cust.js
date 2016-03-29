@@ -152,7 +152,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	}).state('paymentmm', {
 		url : "/paymentmm",
 		templateUrl : "templates/custpaymentmm.html",
-		controller : 'custpaymentsmmCtrl'
+		controller : 'custpaymentsCtrl'
 	})
 })
 

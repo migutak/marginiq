@@ -383,7 +383,6 @@ app.factory('ordersService', function($http){
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {id:x}
 				      }).success(function (response) {
-				      		console.log(response);
 				        	return response;
 				      }).error(function(error){
 				      		alert("Error: "+ error);
@@ -569,6 +568,34 @@ app.factory('ordersService', function($http){
 				      		url:'/accepted_mm_offers',
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {offeredby:domain}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    to_confirm_offers_mm: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/to_confirm_offers_mm',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    payments_mm_confirm: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_mm_confirm',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
 				      }).success(function (response) {
 				      		//console.log(response);
 				        	return response;

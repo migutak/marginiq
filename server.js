@@ -386,6 +386,30 @@
                     });
             });
         });
+
+        app.get('/to_confirm_offers_mm', function(req,res){
+          var username = req.query.username;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query('select offerid,orderidfk,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtype,mmtypebank'+
+                          ',orderdate,mmfrom,mmto,Moneymarketorders.orderamount,orderdate,ccy,bankcomment,tenuredays,recipient,custcomment,ordertypefk,currentstatus, Moneymarketorders.orderamount+totalinterest-tax netamount '+
+                          'from offers_mm left outer join Moneymarketorders on offers_mm.orderidfk = Moneymarketorders.orderid where status = ? and confirm = ? and recipient = offeredby',['Accepted','Sent'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
 //
       app.get('/get_bank_orders_swap/:domain', function(req,res){
           var domain = req.params.domain;
@@ -625,6 +649,57 @@
             connectionpool.getConnection(function(err, connection) {
                     connection.query('select orderindex,orderid,usernamefk,ccy,orderdate,orderamount,mmfrom,mmto,custname,tenuredays,recipient,currentstatus,custcomment,ordertypefk,mmtype,mmtypebank '+
                           'from Moneymarketorders where orderindex = ? ',[orderindex], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+
+        app.get('/confirmed_mm_offer', function(req,res){
+            var orderindex = req.params.orderindex;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,fixedrate,Moneymarketorders.orderamount,daycount,totalinterest,tax,netinterest,bankcomment,offeredby,usernamefk'+
+                        ',ccy,orderdate,offerdate,orderid,mmto,mmfrom,recipient, custcomment,ordertypefk,tenuredays,mmtype,mmtypebank,currentstatus,confirm,status '+
+                        'from offers_mm left join Moneymarketorders on offers_mm.orderidfk = Moneymarketorders.orderid where status = ? and confirm IN (?,?) and recipient=offeredby ',['Accepted','Confirmed','Confirmed-Paid'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+        app.get('/payments_mm_confirm', function(req,res){
+            var orderindex = req.params.orderindex;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtype,mmtypebank'+
+                        ',orderdate,mmfrom,mmto,Moneymarketorders.orderamount,orderdate,ccy,bankcomment,tenuredays,recipient,custcomment,ordertypefk,currentstatus, Moneymarketorders.orderamount+totalinterest-tax netamount '+
+                        'from offers_mm left outer join Moneymarketorders on offers_mm.orderidfk = Moneymarketorders.orderid where status = ? and confirm = ? ',['Accepted','Confirmed'], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -885,7 +960,7 @@ app.post('/add_forward_order', function(req,res){
       var date = req.body.date;
       console.log('confirm_mm_offer', req.body);
       connectionpool.getConnection(function(err, connection) {
-            connection.query('Update offers_mm set confirm = ?, confirmdate=? where offerid = ?' ,['Sent','date',offerid], function(err, rows, fields) {
+            connection.query('Update offers_mm set confirm = ?, confirmdate=? where offerid = ?' ,['Sent',date,offerid], function(err, rows, fields) {
                 if (err) {
                     console.error(err);
                     res.statusCode = 500;
@@ -919,6 +994,28 @@ app.post('/add_forward_order', function(req,res){
                 res.send({
                     result: 'success',
                     data:   'accept_mm_offer2 successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+
+    app.post('/accept_mm_deal', function(req, res){
+      var offerid = req.body.offerid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_mm set confirm = ? where offerid = ?' ,['Confirmed',offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_mm_deal successful',
                 });
                 connection.release();
             });

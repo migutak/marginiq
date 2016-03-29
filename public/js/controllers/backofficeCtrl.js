@@ -7,10 +7,13 @@ app.controller('backofficeCtrl',function($scope, ordersService, socketio) {
 	$scope.confirmedmmoffers = [];
 
     $scope.confirmedforwardoffers_notification = 0;
+    $scope.confirmedmmoffers_notification = 0;
+    $scope.confirmedswapoffers_notification = 0;
     $scope.total_notification = 0;
 
     confirmed_forward_bo();
     confirmed_offers();
+    confirmed_mm_offers();
 
     socketio.on('accept_forward_deal', function(msg){
         confirmed_forward_bo();
@@ -29,13 +32,20 @@ app.controller('backofficeCtrl',function($scope, ordersService, socketio) {
         })
     }
     
-    /*ordersService.confirmed_swap_offers().then(function(d){
-    	$scope.confirmedswapoffers = d.data
-    })
+    function confirmed_swap_offers(){
+        ordersService.confirmed_swap_offers().then(function(d){
+            $scope.confirmedswapoffers = d.data
+        })
+    }
     
-    ordersService.confirmed_mm_offers().then(function(d){
-    	$scope.confirmedmmoffers = d.data
-    })*/
+    
+    function confirmed_mm_offers(){
+        ordersService.confirmed_mm_offers().then(function(d){
+            $scope.confirmedmmoffers = d.data.data;
+            $scope.confirmedmmoffers_notification = d.data.data.length;
+        })
+    }
+    
 
     function confirmed_forward_bo(){
         ordersService.confirmed_forward_bo().then(function(d){
@@ -46,6 +56,6 @@ app.controller('backofficeCtrl',function($scope, ordersService, socketio) {
     }
 
     function add(){
-        $scope.total_notification = $scope.confirmedoffers_notification + $scope.confirmedforwardoffers_notification
+        $scope.total_notification = $scope.confirmedoffers_notification + $scope.confirmedforwardoffers_notification + $scope.confirmedmmoffers_notification + $scope.confirmedswapoffers_notification
     }   
 })
