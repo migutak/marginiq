@@ -386,7 +386,7 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,$state,
     }
 })
 
-app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ordersService,$filter){
+app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ordersService,$filter,$timeout){
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
 	
@@ -477,8 +477,9 @@ app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ord
 	}
 		
 	$scope.newswapOffer =function(){
+		$scope.dataLoading = true;
 		$scope.newswapoffer.offeredby = username;
-				$http({
+					$http({
 		              method: 'post',
 		              url: '/new_swap_offer',
 		              headers: {'Content-Type': 'application/json'},
@@ -489,15 +490,22 @@ app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ord
 		              	,fardate:$scope.newswapoffer.fardate,comment:$scope.newswapoffer.bankcomment,offeredby:domain,bankuser:username
 		              }
 		            }).success(function (data) {
-		              alert("FxSwap Offer Submitted");
-		              $scope.newswapoffer = {};
-					  $state.go('homeswap');
+		            	$timeout(function() {
+		            		alert("FxSwap Offer Submitted");
+		              		$scope.dataLoading = true;
+		              		$scope.newswapoffer = {};
+					  		$state.go('homeswap');
+		            	}, 3000);
+		              
 		            }).error(function (err) {
 		                alert("Error making Fxswap offer");
+		                $scope.dataLoading = true;
 		                console.log(err)
-		                //$scope.newswapoffer = {};
-						//$state.go('homeswap');
+		                $scope.newswapoffer = {};
+						$state.go('homeswap');
 		            });	
+
+		ordersService.updateorderswap($scope.newswapoffer.orderid).then(function(d){})
 	}
        
 });

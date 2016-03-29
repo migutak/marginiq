@@ -718,6 +718,58 @@
             });
         });
 
+        app.get('/get_s_swap_offer', function(req,res){
+            var orderidfk = req.query.id;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,Swaporders.neardate,offeredby,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,createdate,usernamefk'+
+                        ',ccypair,orderdate,farspot,farmargin,farfinal,buysell,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount,recipient,comment,custcomment,ordertypefk,Swaporders.fardate '+
+                        'from offers_swap left outer join Swaporders on offers_swap.orderidfk = Swaporders.orderid where orderidfk =? ',[orderidfk], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+        app.get('/get_swap_offer', function(req,res){
+            var offerid = req.query.offerid;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,Swaporders.neardate,offeredby,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,createdate,usernamefk'+
+                        ',ccypair,orderdate,farspot,farmargin,farfinal,buysell,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount,recipient,comment,custcomment,ordertypefk,Swaporders.fardate,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank '+
+                        'from offers_swap left outer join Swaporders on offers_swap.orderidfk = Swaporders.orderid where offerid =?',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC',offerid], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
         app.get('/get_a_currency/:ccy', function(req,res){
             var ccy = req.params.ccy;
             connectionpool.getConnection(function(err, connection) {
@@ -916,6 +968,28 @@ app.post('/add_forward_order', function(req,res){
       var orderindex = req.body.orderindex;
       connectionpool.getConnection(function(err, connection) {
             connection.query('Update Moneymarketorders set currentstatus = ? where orderindex = ?' ,['OfferReceived',orderindex], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'updateordermm successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/updateorderswap', function(req, res){
+        console.log(req.body);
+      var orderindex = req.body.orderindex;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update Swaporders set currentstatus = ? where orderid = ?' ,['OfferReceived',orderindex], function(err, rows, fields) {
                 if (err) {
                     console.error(err);
                     res.statusCode = 500;

@@ -80,16 +80,6 @@ app.controller('custCtrl', function($scope,$http,ordersService,socketio){
 		});
 	};
 
-	$scope.viewswapoffers = function(orderid){
-		$scope.orderdetails = [];
-		$scope.offertitle = '';
-		ordersService.swapoffer(orderid).then(function(d) {
-		  	//console.log(d.data);
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
-		});
-	};
-
 	$scope.viewmmoffers = function(orderid){
 		$scope.orderdetails = [];
 		$scope.offertitle = '';
@@ -107,13 +97,13 @@ app.controller('custCtrlswap', function($scope,$http,ordersService,socketio){
 
 	$scope.custorders_swap = [];
 	
-	spoto()
+	swaporders()
 	
 	socketio.on('new swap offer', function(msg){
-		spoto()
+		swaporders()
 	});
 	
-	function spoto(){
+	function swaporders(){
 		$http({
 		    url: '/get_all_swap_orders/'+$scope.username, 
 		    method: "GET",
@@ -130,6 +120,14 @@ app.controller('custCtrlswap', function($scope,$http,ordersService,socketio){
 		  	console.log(d.data.data[0]);
 		    $scope.orderdetails = d.data.data;
 		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
+		});
+	};
+
+	$scope.viewswapoffers = function(orderid){
+		ordersService.offer_s_swap(orderid).then(function(d) {
+		  	//console.log(d.data);
+		    $scope.orderdetails = d.data.data;
+		    $scope.offertitle = 'for Deal ID: '+d.data.data[0].orderidfk;
 		});
 	};
 	
@@ -1044,5 +1042,59 @@ app.controller('confirmoffermmCtrl', function($scope, $stateParams,$http,$state,
     					$scope.showReject = false;
 	                 }
 	               }, true);
+})
+
+app.controller('offeracceptswapCtrl', function($scope, $stateParams, $http,$state, ordersService) {
+    var orderid = $stateParams.orderidfk;
+	var offerid = $stateParams.offerid;
+	
+	$scope.acceptofferswap = [];
+	
+	ordersService.offerdetails_swap(offerid).then(function(d) {
+		console.log(d.data)
+	    $scope.acceptofferswap = d.data.data[0];
+	    //seems both login are the same and working kindly check ???????
+	    if($scope.acceptofferswap.buysell=="BUY" && $scope.acceptofferswap.nearsellorderamount>0){
+	    	$scope.acceptofferswap.buysell_disp='BUY - SELL';
+	    	$scope.acceptofferswap.nearsellorderamountccy_disp = $scope.acceptofferswap.nearbuyorderamountccy;
+	    	$scope.acceptofferswap.farbuyorderamountccy_disp = $scope.acceptofferswap.farsellorderamountccy;
+	    	$scope.acceptofferswap.nearsellorderamount_disp = $scope.acceptofferswap.nearbuyorderamount;
+	    	$scope.acceptofferswap.farbuyorderamount_disp = $scope.acceptofferswap.farsellorderamount;
+	    	
+	    	$scope.acceptofferswap.nearbuyorderamountccy_disp = $scope.acceptofferswap.nearsellorderamountccy;
+	    	$scope.acceptofferswap.farsellorderamountccy_disp = $scope.acceptofferswap.farbuyorderamountccy;
+	    	$scope.acceptofferswap.nearbuyorderamount_disp = $scope.acceptofferswap.nearsellorderamount;
+	    	$scope.acceptofferswap.farsellorderamount_disp = $scope.acceptofferswap.farbuyorderamount;
+	    	
+	    }else if($scope.acceptofferswap.buysell=="SELL" && $scope.acceptofferswap.nearbuyorderamount>0){
+	    	$scope.acceptofferswap.buysell_disp='SELL - BUY';
+	    	
+	    	$scope.acceptofferswap.nearsellorderamountccy_disp = $scope.acceptofferswap.nearbuyorderamountccy;
+	    	$scope.acceptofferswap.farbuyorderamountccy_disp = $scope.acceptofferswap.farsellorderamountccy;
+	    	$scope.acceptofferswap.nearsellorderamount_disp = $scope.acceptofferswap.nearbuyorderamount;
+	    	$scope.acceptofferswap.farbuyorderamount_disp = $scope.acceptofferswap.farsellorderamount;
+	    	
+	    	$scope.acceptofferswap.nearbuyorderamountccy_disp = $scope.acceptofferswap.nearsellorderamountccy;
+	    	$scope.acceptofferswap.farsellorderamountccy_disp = $scope.acceptofferswap.farbuyorderamountccy;
+	    	$scope.acceptofferswap.nearbuyorderamount_disp = $scope.acceptofferswap.nearsellorderamount;
+	    	$scope.acceptofferswap.farsellorderamount_disp = $scope.acceptofferswap.farbuyorderamount;
+	    }
+	    
+	});
+	
+	$scope.accept = function(){
+		$http({
+		    method: 'post',
+		    url: '/accept_swap_offer',
+		    headers: {'Content-Type': 'application/json'},
+		    data : {orderid:$scope.acceptofferswap.orderidfk,offerid:offerid}
+		    }).success(function (data) {
+		      alert('Offer '+offerid+' Accepted');
+			  $state.go('homeswap');
+		    }).error(function (error) {
+		       alert("Error when accepting offer");
+			   $state.go('homeswap');
+		    });
+	}
 })
 

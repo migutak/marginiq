@@ -493,6 +493,20 @@ app.factory('ordersService', function($http){
 				      		});
 				      return promise;
 				    },
+				    updateorderswap: function(orderindex) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/updateorderswap',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderindex:orderindex}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
 				    offer_s_mm: function(orderid) {
 				      var promise = $http({
 				      		method:'GET',
@@ -602,6 +616,34 @@ app.factory('ordersService', function($http){
 				      }).error(function(error){
 				      		alert("Error: "+ error);
 				      });
+				      return promise;
+				    },
+				    offer_s_swap: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/get_s_swap_offer',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:{id:x}
+				      }).success(function (response) {
+				      			console.log(response);
+				        		return response;
+				      }).error(function(error){
+				      			console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    offerdetails_swap: function(offerid) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/get_swap_offer',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:{offerid:offerid}
+				      }).success(function (response) {
+				      			console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
 				      return promise;
 				    }
 	};
