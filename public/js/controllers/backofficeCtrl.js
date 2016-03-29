@@ -14,6 +14,7 @@ app.controller('backofficeCtrl',function($scope, ordersService, socketio) {
     confirmed_forward_bo();
     confirmed_offers();
     confirmed_mm_offers();
+    confirmed_swap_offers();
 
     socketio.on('accept_forward_deal', function(msg){
         confirmed_forward_bo();
@@ -34,7 +35,10 @@ app.controller('backofficeCtrl',function($scope, ordersService, socketio) {
     
     function confirmed_swap_offers(){
         ordersService.confirmed_swap_offers().then(function(d){
-            $scope.confirmedswapoffers = d.data
+            console.log(d.data.data)
+            $scope.confirmedswapoffers = d.data.data;
+            $scope.confirmedswapoffers_notification = d.data.data.length;
+            add();
         })
     }
     

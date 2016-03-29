@@ -769,7 +769,8 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	}
 
 	function payments_swap(){
-	    ordersService.confirmed_offers().then(function(d){
+	    ordersService.payments_swap_confirm().then(function(d){
+	    	console.log(d.data.data);
 	        $scope.payments_swap = d.data.data
 	        $scope.payments_swap_notification = d.data.data.length;
 	    }) 
@@ -1094,4 +1095,71 @@ app.controller('offeracceptswapCtrl', function($scope, $stateParams,$timeout,$st
 		
 	}
 })
+
+app.controller('custconfirmations_swapCtrl', function($scope,Data,ordersService){
+	$scope.toconfirmoffers = [];
+	//$scope.Data.pagetitle = 'Swap Confirmations';
+	$scope.swapnotification = 0;
+	ordersService.to_confirm_offers_swap().then(function(d){
+		$scope.toconfirmoffers = d.data.data;
+		$scope.swapnotification = d.data.data.length;
+	})
+	
+});
+
+app.controller('confirmswapofferCtrl', function($scope, $stateParams,$state, $http,$interval, Data, ordersService) {
+    var offerid = $stateParams.offerid;
+    $scope.reject = {};
+    $scope.showAccept = false;
+    $scope.showReject = false;
+    
+    ordersService.offerdetails_swap(offerid).then(function(d){
+		$scope.booking = d.data.data[0];
+	})
+	
+	$scope.accept = function(){
+		//accept booked deal
+		$http({
+		   method: 'POST',
+		   url: '/accept_swap_deal',
+		   headers: {'Content-Type': 'application/json'},
+		   data : {offerid:offerid}
+		}).success(function (data) {
+		    alert("Deal Accepted");
+			$state.go('custconfirmations_swap');
+		}).error(function (error) {
+		    alert("Error accepting deal");
+			$state.go('custconfirmations_swap');
+		});	
+	}
+	
+	$scope.reject = function(){
+		//reject booked deal
+		$http({
+		    method: 'POST',
+		    url: '/reject_deal',
+		    headers: {'Content-Type': 'application/json'},
+		    data : {id:offerid,reason:$scope.reject.rejectreason}
+		 }).success(function (data) {
+		    alert("Deal Rejected Submitted");
+			$state.go('custconfirmations');
+		 }).error(function (error) {
+		    alert("Error rejecting deal");
+			$state.go('custconfirmations');
+		});	
+	}
+	
+				$scope.$watch("booking.confirm", function (newval) {
+	               if(newval=="Reject"){
+	                    $scope.showAccept = false;
+    					$scope.showReject = true;
+	                 }else{
+	              	 	$scope.showAccept = true;
+    					$scope.showReject = false;
+	                 }
+	               }, true);
+    
+});
+
+
 

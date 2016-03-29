@@ -376,6 +376,18 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
+				    confirmed_swap_offers: function(x) {
+				      var promise = $http({
+				      		method:'get',
+				      		url:'/confirmed_swap_offers',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
 				    confirmed_mm_offers: function(x) {
 				      var promise = $http({
 				      		method:'get',
@@ -644,6 +656,20 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
+				    payments_swap_confirm: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_swap_confirm',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
 				    offer_s_swap: function(x) {
 				      var promise = $http({
 				      		method:'GET',
@@ -670,6 +696,20 @@ app.factory('ordersService', function($http){
 				      		}).error(function(error){
 				      			console.log("Error: "+error);
 				      		});
+				      return promise;
+				    },
+				    to_confirm_offers_swap: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/to_confirm_offers_swap',
+				      		headers: {'Content-Type': 'application/json'}
+				      		//params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
 				      return promise;
 				    }
 	};

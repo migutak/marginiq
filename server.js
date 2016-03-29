@@ -693,6 +693,9 @@
             });
         });
 
+
+                        
+
         app.get('/payments_mm_confirm', function(req,res){
             var orderindex = req.params.orderindex;
             connectionpool.getConnection(function(err, connection) {
@@ -700,6 +703,31 @@
                         'select offerid,orderidfk,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtype,mmtypebank'+
                         ',orderdate,mmfrom,mmto,Moneymarketorders.orderamount,orderdate,ccy,bankcomment,tenuredays,recipient,custcomment,ordertypefk,currentstatus, Moneymarketorders.orderamount+totalinterest-tax netamount '+
                         'from offers_mm left outer join Moneymarketorders on offers_mm.orderidfk = Moneymarketorders.orderid where status = ? and confirm = ? ',['Accepted','Confirmed'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+        app.get('/payments_swap_confirm', function(req,res){
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,offers_swap.neardate,offeredby,offers_swap.fardate,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,usernamefk'+
+                        ',ccypair,orderdate,farfinal,buysell,buysellbank,currentstatus,recipient,ordertypefk,status,if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount '+
+                        'from offers_swap left join Swaporders on offers_swap.orderindex = Swaporders.orderindex where status = ? and confirm = ? ',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC','Accepted','Confirmed'], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -743,6 +771,31 @@
             });
         });
 
+        app.get('/to_confirm_offers_swap', function(req,res){
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,offers_swap.neardate,offeredby,offers_swap.fardate,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,usernamefk'+
+                        ',ccypair,orderdate,farfinal,buysell,buysellbank,currentstatus,recipient,ordertypefk,status,if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount '+
+                        'from offers_swap left outer join Swaporders on offers_swap.orderidfk = Swaporders.orderid where status = ? and confirm = ? and recipient = offeredby',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC','Accepted','Sent'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
         app.get('/get_swap_offer', function(req,res){
             var offerid = req.query.offerid;
             connectionpool.getConnection(function(err, connection) {
@@ -752,6 +805,31 @@
                         'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
                         'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank '+
                         'from offers_swap left outer join Swaporders on offers_swap.orderidfk = Swaporders.orderid where offerid =?',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC',offerid], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });//
+
+        app.get('/confirmed_swap_offers', function(req,res){
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,nearspot,nearmargin,nearfinal,offers_swap.neardate,offeredby,offers_swap.fardate,offers_swap.nearbuyorderamountccy,offers_swap.nearbuyorderamount,offers_swap.nearsellorderamountccy,offers_swap.nearsellorderamount,usernamefk'+
+                        ',ccypair,orderdate,farfinal,buysell,buysellbank,currentstatus,recipient,ordertypefk,status,if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) recbank,'+
+                        'if(buysell=? AND offers_swap.nearbuyorderamount>0,?,if(buysell=? AND offers_swap.nearsellorderamount>0,?,?)) paybank,offers_swap.farbuyorderamount,offers_swap.farbuyorderamountccy,offers_swap.farsellorderamountccy,offers_swap.farsellorderamount '+
+                        'from offers_swap left join Swaporders on offers_swap.orderidfk = Swaporders.orderid where status = ? and confirm IN (?,?) and recipient=offeredby',['BUY','REC','SELL','REC','PAY','BUY','PAY','SELL','PAY','REC','Accepted','Confirmed', 'Confirmed-Paid'], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -1005,6 +1083,27 @@ app.post('/add_forward_order', function(req,res){
                 res.send({
                     result: 'success',
                     data:   'updateordermm successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/accept_swap_deal', function(req, res){
+      var offerid = req.body.offerid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_swap set confirm = ? where offerid = ?' ,['Confirmed',offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_swap_deal successful',
                 });
                 connection.release();
             });
