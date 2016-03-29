@@ -242,7 +242,7 @@ app.controller('acceptedoffersCtrl', function($scope,ordersService){
 	})
 
 	ordersService.accepted_forward_offers(username).then(function(d){
-		console.log(d.data.data);
+		//console.log(d.data.data);
 		$scope.forwardoffers = d.data.data;
 	})
 	
@@ -648,8 +648,40 @@ app.controller('acceptedmmoffersCtrl', function($scope,ordersService){
 	var domain = window.sessionStorage.getItem('bankdomain');
 	
 	ordersService.accepted_mm_offers(domain).then(function(d){
-		console.log(d.data);
-		$scope.mmoffers = d.data;
+		$scope.mmoffers = d.data.data;
+		$scope.mmnotification = d.data.data.length
 	})
+});
+
+app.controller('bookmmdealCtrl',function($scope,$http,$state,$stateParams,ordersService){
+	$scope.booking = {};
+	var offerid = $stateParams.offerid;
+	
+	ordersService.offerdetails_mm(offerid).then(function(d){
+		$scope.booking = d.data.data[0];
+		if($scope.booking.mmtypebank == 'Deposit'){
+			$scope.booking.orderamount_disp = $scope.booking.orderamount;
+			$scope.booking.netamount_disp = $scope.booking.netamount;
+		}else{
+			$scope.booking.orderamount_disp = $scope.booking.netamount;
+			$scope.booking.netamount_disp = $scope.booking.orderamount;
+		}
+		//console.log(d.data[0]);
+	})
+	
+	$scope.custconfirm = function(){
+		$http({
+		    method: 'POST',
+		    url: '/confirm_mm_offer',
+		    headers: {'Content-Type': 'application/json'},
+		    data : {offerid: offerid, date:new Date()}
+		    }).success(function (data) {
+		        alert("MM Deal Successfully Booked");
+				$state.go('acceptedoffermm');
+		    }).error(function (error) {
+		        alert("Error booking a deal");
+				$state.go('acceptedoffermm');
+		    });
+	}
 });
 

@@ -568,7 +568,7 @@ app.factory('ordersService', function($http){
 				      		method:'GET',
 				      		url:'/accepted_mm_offers',
 				      		headers: {'Content-Type': 'application/json'},
-				      		params:	 {id:domain}
+				      		params:	 {offeredby:domain}
 				      }).success(function (response) {
 				      		//console.log(response);
 				        	return response;
