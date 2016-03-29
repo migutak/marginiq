@@ -534,7 +534,7 @@ app.controller('newmmofferCtrl', function($scope, $stateParams, $filter,$state,$
     }
     
     $scope.newmmOffer = function(){
-    	$scope.loading = true;
+    	$scope.dataLoading = true;
 				$http({
 		              method: 'post',
 		              url: '/new_mm_offer',
@@ -544,16 +544,17 @@ app.controller('newmmofferCtrl', function($scope, $stateParams, $filter,$state,$
 		              		bankcomment:$scope.newmmoffer.bankcomment,offeredby:domain,bankuser:username}
 		            }).success(function (data) {
 		            	$timeout(function(){
-		            		$scope.loading = false;
+		            		$scope.dataLoading = false;
 		            		alert("Offer Submitted");
 		              		$scope.newmmoffer = {};
 					  		$state.go('homemm');
-		            	},300,true)
+		            	},3000,true)
 		              
 		            }).error(function (error) {
+		            	$scope.dataLoading = false;
 		                alert("Error when making an offer");
-		                //$scope.newmmoffer = {};
-						//$state.go('homemm');
+		                $scope.newmmoffer = {};
+						$state.go('homemm');
 		            });	
 		
 		ordersService.updateordermm(indexid).then(function(d){
@@ -640,3 +641,15 @@ app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootS
 		            
 	}
 });
+
+app.controller('acceptedmmoffersCtrl', function($scope,ordersService){
+	$scope.mmoffers = [];
+	var username = window.sessionStorage.getItem('username');
+	var domain = window.sessionStorage.getItem('bankdomain');
+	
+	ordersService.accepted_mm_offers(domain).then(function(d){
+		console.log(d.data);
+		$scope.mmoffers = d.data;
+	})
+});
+

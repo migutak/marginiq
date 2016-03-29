@@ -1,9 +1,10 @@
 
-     
-<div class="content" cg-busy="{promise:promise,templateUrl:templateUrl,message:'Data being submitted',backdrop:backdrop,delay:0,minDuration:700}">
+<div class="container">   
 	 <a href="#/neworder">Forex Spot</a> | <a href="#/newswap">Forex Swap</a> | <a href="#/newforward">Forex Forward</a> | <b>Money Market</b>
-        <section class="content">
-        	<h1 class="container">Money Market</h1>
+</div>
+
+        <section class="container">
+        	<h3>Money Market</h3>
         	<div class="cloading"></div>
             <div class="row">
                 <form ng-submit="save_mm_Order()" method="post" id="newmmform" class="form-horizontal">
@@ -86,8 +87,9 @@
                     <div class="form-group">
                     <label class="col-xs-3 control-label"></label>
                     	<div class="col-xs-5 selectContainer">
-                    		<button type="submit" class="btn btn-info" ng-disabled="newmmform.$invalid">Submit</button>
                     		<a class="btn btn-danger" href="#/homemoneymarket">Cancel</a> 
+                    		<button type="submit" class="btn btn-info" ng-disabled="newmmform.$invalid">Submit</button>
+                    		<img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                     	</div>
                     </div>
                 </form>

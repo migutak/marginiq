@@ -1,5 +1,6 @@
+<div class="container">
 <a href="#/home">Forex Spot</a> | <a href="#/homeswap">Forex Swap</a> | <a href="#/homeforward">Forex Forward</a> | <b>Money Markets</b>
-
+</div>
 <div class="row">
         <div class="col-md-7">
             <!-- Map box -->
@@ -58,7 +59,7 @@
                                 </tr>
                                 <tr ng-repeat="ord in orderdetails | filter:query">
                                     <td>{{ord.offeredby}}</td>
-                                    <td>{{ord.fixedrate}}%</td>
+                                    <td>{{ord.fixedrate}}</td>
                                     <td>{{ord.ccy}} {{ord.totalinterest | number:2}}</td>
                                     <td>{{ord.ccy}} {{ord.tax | number:2}}</td>
                                     <td>{{ord.netinterest | number:2}}</td>

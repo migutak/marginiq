@@ -72,18 +72,18 @@ app.controller('custCtrl', function($scope,$http,ordersService,socketio){
 	};
 
 	$scope.viewforwardoffers = function(orderid){
-		var x = orderid;
 		$scope.orderdetails = [];
 		$scope.offertitle = '';
-		ordersService.forwardoffer(x).then(function(d) {
+		ordersService.forwardoffer(orderid).then(function(d) {
 		    $scope.orderdetails = d.data.data;
 		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
 		});
 	};
 
 	$scope.viewswapoffers = function(orderid){
-		var x = orderid;
-		ordersService.swapoffer(x).then(function(d) {
+		$scope.orderdetails = [];
+		$scope.offertitle = '';
+		ordersService.swapoffer(orderid).then(function(d) {
 		  	//console.log(d.data);
 		    $scope.orderdetails = d.data.data;
 		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
@@ -91,13 +91,11 @@ app.controller('custCtrl', function($scope,$http,ordersService,socketio){
 	};
 
 	$scope.viewmmoffers = function(orderid){
-		console.log('Details of mm offer loading ... ',orderid);
-		$scope.loading = true;
-		var x = orderid;
-		ordersService.offer_s_mm(x).then(function(d) {
-			console.log(d);
-		    $scope.orderdetails = d.data;
-		    $scope.offertitle = 'for Deal Number: ' + d.data[0].orderidfk;
+		$scope.orderdetails = [];
+		$scope.offertitle = '';
+		ordersService.offer_s_mm(orderid).then(function(d) {
+		    $scope.orderdetails = d.data.data;
+		    $scope.offertitle = 'for Deal Number: ' + d.data.data[0].orderidfk;
 		});
 	};
 	
@@ -204,7 +202,7 @@ app.controller('forwardofferacceptCtrl', function($scope,$stateParams,$state,$ht
 	
 })
 
-app.controller('neworderCtrl', function($scope,$http, $filter, $state){
+app.controller('neworderCtrl', function($scope,$http, $filter, $state, ordersService){
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('custdomain');
 
@@ -286,14 +284,19 @@ app.controller('neworderCtrl', function($scope,$http, $filter, $state){
 	    $scope.neworder.ccysellorderamount = $filter('limitTo')(newval,-$scope.num)
 	}, true);
 
-	$scope.$watch("neworder.mybanks", function(newval) {
+				$scope.$watch("neworder.mybanks", function(newval) {
 				    if(newval){
 				    	$scope.neworder.bank={};
-				    	
+				    	ordersService.getmybanks().then(function(d){
+							$scope.banks = d.data.data;
+						})
 				    }else{
-				    	$scope.neworder.bank={};				    	
+				    	$scope.neworder.bank={};
+				    	ordersService.getbanks().then(function(d){
+							$scope.banks = d.data.data;
+						})
 				    };
-	});
+				})
 	            
 	            $scope.setfunct = function(){
 	            	if($scope.neworder.buyorderamount !== ""){
@@ -503,7 +506,7 @@ app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$s
 	               }, true);
 })
 
-app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,ordersService){
+app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,Data,ordersService){
 	var username = window.sessionStorage.getItem('username');
 	console.log('newswaporderCtrl '+username);
 	$scope.newswaporder = {};
@@ -594,7 +597,7 @@ app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,ordersSe
 	
 })
 
-app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$interval,$timeout, ordersService) {
+app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$interval,$timeout, ordersService, Data) {
     var username = window.sessionStorage.getItem('username');
     var domain = window.sessionStorage.getItem('custdomain');
     //var custname = window.sessionStorage.getItem('custname');
@@ -606,8 +609,8 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	$scope.currency = [];
 	//$scope.newmmorder.mybanks = 'yes';
 	
-	//$scope.Data = Data;
-	//$scope.Data.pagetitle = 'New Money Market Order';
+	$scope.Data = Data;
+	$scope.Data.pagetitle = 'New Money Market Order';
 	
 	ordersService.getcurrency().then(function(d){
 		//console.log(d.data.data);
@@ -625,9 +628,9 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	
 	
 	$scope.$watch("newmmorder.mybanks", function(newval) {
-		console.log(newval);
 	    if(newval){
-	    	ordersService.getbanks().then(function(d){
+	    	$scope.newmmorder.bank={};
+	    	ordersService.getmybanks().then(function(d){
 				$scope.banks = d.data.data;
 			})   	
 	    }else{
@@ -639,31 +642,40 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	})
 	
 	//to hold at start
-	var x = '01-02-2016';
+	var x;
 	
 	$scope.$watch("newmmorder.mmto", function(newval) {
-		$scope.formatString = function(x) {
-		    var day   = parseInt(x.substring(0,2));
-		    var month  = parseInt(x.substring(3,5));
-		    var year   = parseInt(x.substring(6,10));
-		    var date = new Date(year, month-1, day);
-		    return date;
+		if(newval){
+			x = newval;
+			if(x != undefined){
+			
+				$scope.formatString = function(x) {
+			    var day   = parseInt(x.substring(0,2));
+			    var month  = parseInt(x.substring(3,5));
+			    var year   = parseInt(x.substring(6,10));
+			    var date = new Date(year, month-1, day);
+			    return date;
+				}
+				var date2 = new Date($scope.formatString($scope.newmmorder.mmto));
+			    var date1 = new Date($scope.formatString($scope.newmmorder.mmfrom));
+			    var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+				
+				//console.log('Date 2 ..'+ date2 + $scope.newmmorder.mmto);
+				//console.log('Date 1 ..'+ date1);
+				
+			    $scope.dayDifference = Math.ceil(timeDiff / (1000 * 3600 * 24));
+			    //console.log('Diffrence ..'+ $scope.dayDifference);
+			    $scope.newmmorder.tenure = $scope.dayDifference;
+			    $scope.newmmorder.tenuredisp = $scope.dayDifference + "D";
+			}else{
+				console.log('out');
+			}
+			
 		}
-		var date2 = new Date($scope.formatString($scope.newmmorder.mmto));
-	    var date1 = new Date($scope.formatString($scope.newmmorder.mmfrom));
-	    var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-		
-		console.log('Date 2 ..'+ date2 + $scope.newmmorder.mmto);
-		console.log('Date 1 ..'+ date1);
-		
-	    $scope.dayDifference = Math.ceil(timeDiff / (1000 * 3600 * 24));
-	    //console.log('Diffrence ..'+ $scope.dayDifference);
-	    $scope.newmmorder.tenure = $scope.dayDifference;
-	    $scope.newmmorder.tenuredisp = $scope.dayDifference + "D";
 	}, true)
 	
 	$scope.save_mm_Order = function(){
-		$scope.loading = true;
+		$scope.dataLoading = true;
 		
 		var i = $scope.newmmorder.bank.length;
 		//console.log(i);
@@ -695,13 +707,14 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
       				}).success(function (data) {
 		              //console.log(data);
 					  $timeout(function(){
-					  	$scope.loading = false;
+					  	$scope.dataLoading = false;
 					  	alert("New Money Market Order Submitted ");
 					  	$scope.newmmorder = {};
 					  	$state.go('homemoneymarket');
 					  },3000)
 		            }).error(function () {
 		                alert("Error making new order");
+		                $scope.dataLoading = false;
 		                $scope.newmmorder = {};
 						$state.go('homemoneymarket');
 		            });
@@ -718,12 +731,19 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	$scope.payments_mm = [];
 
     $scope.payments_forward_notification = 0;
+    $scope.payments_spot_notification = 0;
+    $scope.payments_swap_notification = 0;
+    $scope.payments_mm_notification = 0;
 
     payments_forward();
+    payments_spot();
 
     socketio.on('payments_forward', function(msg){
         payments_forward();
-       // Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homemm">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+    });
+
+    socketio.on('payments_spot', function(msg){
+        payments_spot();
     });
 
 
@@ -731,6 +751,13 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	    ordersService.payments_forward().then(function(d){
 	        $scope.confirmedforwardoffers = d.data.data
 	        $scope.payments_forward_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_spot(){
+	    ordersService.confirmed_offers().then(function(d){
+	        $scope.payments_spot = d.data.data
+	        $scope.payments_spot_notification = d.data.data.length;
 	    }) 
 	}
 });
@@ -897,3 +924,36 @@ app.controller('custconfirmations_forwardCtrl', function($scope,ordersService){
 	})	
 });
 
+app.controller('offeracceptmmCtrl', function($scope, $stateParams, $http, $state,$filter, Data,ordersService) {
+	//$scope.Data.pagetitle = 'Accept Offer';
+    var orderid = $stateParams.orderidfk;
+	var offerid = $stateParams.offerid;
+	var orderidfk = '';
+	$scope.acceptoffermm = [];
+	
+	ordersService.offerdetails_mm(offerid).then(function(d) {
+	    $scope.acceptoffermm = d.data.data[0];
+	    orderidfk = d.data.data[0].orderidfk;
+	    //$scope.Data.pagetitle = 'Accept '+d.data.data[0].mmtype+' offer';
+	    $scope.acceptoffermm.totalinterest_disp = $filter('number')(d.data.data[0].totalinterest,2);
+	    $scope.acceptoffermm.netamount_disp = $filter('number')(d.data.data[0].netamount,2);
+	    $scope.acceptoffermm.tax_disp = $filter('number')(d.data.data[0].tax,2);
+	})
+
+	
+	
+	$scope.accept = function(){
+		console.log(orderidfk);
+		$scope.dataLoading = true;
+
+		ordersService.accept_mm_offer(offerid).then(function(d) {
+
+		})
+
+		ordersService.accept_mm_offer2(orderidfk).then(function(d) {
+			alert('Offer '+orderidfk+' Accepted');
+		    $scope.dataLoading = false;
+			$state.go('homemoneymarket');
+		})
+	}
+});

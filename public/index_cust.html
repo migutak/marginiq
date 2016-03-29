@@ -192,15 +192,5 @@
 	</div>
 	<script src="plugins/dist/js/app.min.js" type="text/javascript"></script>
 	
-	<script>
-      var socket = io();
-      function testClick(){
-        socket.emit('chat message', 'Test');
-        //return false;
-      };     
-      socket.on('chat message', function(msg){
-        console.log('Server Message');
-      });
-    </script>
 </body>
 </html>

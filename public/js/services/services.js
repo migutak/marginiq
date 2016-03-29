@@ -494,17 +494,17 @@ app.factory('ordersService', function($http){
 				      		});
 				      return promise;
 				    },
-				    offer_s_mm: function(x) {
+				    offer_s_mm: function(orderid) {
 				      var promise = $http({
 				      		method:'GET',
 				      		url:'/get_s_mm_offer',
 				      		headers: {'Content-Type': 'application/json'},
-				      		params:{id:x}
+				      		params:{orderid:orderid}
 				      }).success(function (response) {
-				      			console.log(response);
-				        		return response;
+				      		console.log(response);
+				        	return response;
 				      }).error(function(error){
-				      			console.log("Error: "+error);
+				      		console.log("Error: "+error);
 				      });
 				      return promise;
 				    },
@@ -518,6 +518,62 @@ app.factory('ordersService', function($http){
 				        		return response;
 				      }).error(function(error){
 				      			console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    offerdetails_mm: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/get_mm_offer',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:{id:x}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    accept_mm_offer: function(offerid) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/accept_mm_offer',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{offerid:offerid}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    accept_mm_offer2: function(orderid) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/accept_mm_offer2',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderid:orderid}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    accepted_mm_offers: function(domain) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/accepted_mm_offers',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:domain}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
 				      });
 				      return promise;
 				    }

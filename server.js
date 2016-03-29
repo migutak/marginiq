@@ -229,7 +229,7 @@
     		//console.log('getData params ...',req.params.bankid);
         	var bankid = req.params.bankid;
             connectionpool.getConnection(function(err, connection) {
-                    connection.query('select orderindex, orderid,usernamefk,ccypair,orderdate,sellorderamount+buyorderamount orderamount,sellorderamount,buyorderamount,buysell,buysellbank,currentstatus,'+
+                    connection.query('select orderindex, orderid,usernamefk,ccypair,orderdate,sellorderamount+buyorderamount orderamount,sellorderamount,buyorderamount,if(buyorderamount>0,ccybuyorderamount,ccysellorderamount) orderamountccy,buysell,buysellbank,currentstatus,'+
                     	    'settlementdate,custcomment,ordertypefk from spotorders where currentstatus = ? and recipient = ?',['N','bank1'], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
@@ -526,8 +526,57 @@
       app.get('/get_bank_orders_mm/:username', function(req,res){
             var username = req.params.username;
             connectionpool.getConnection(function(err, connection) {
-                    connection.query('select distinct orderid,orderindex,usernamefk,ccy,orderamount,mmfrom,mmto,tenuredays,custcomment,ordertypefk,mmtype,nOffers '+
+                    connection.query('select distinct orderid,orderindex,usernamefk,ccy,orderamount,mmfrom,mmto,tenuredays,custcomment,ordertypefk,mmtype,mmtypebank,nOffers '+
                           'from Moneymarketorders m left outer join v_mmorders v on m.orderid=v.orderidfk where m.currentstatus in (?) and usernamefk = ? ',['N','dealer1@customer1.com'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+        app.get('/get_s_mm_offer', function(req,res){
+            console.log(req.query);
+            var orderidfk = req.query.orderid;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query('select offerid,orderidfk,fixedrate,ccy,m.orderamount,daycount,totalinterest,tax,netinterest,offeredby,offerdate,orderdate,usernamefk,mmfrom,mmto,tenuredays,recipient,mmtype,recipient,bankcomment,custcomment,ordertypefk '+
+                          'from offers_mm o left outer join Moneymarketorders m on o.orderidfk=m.orderid where orderidfk = ? ',[orderidfk], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+        app.get('/get_mm_offer', function(req,res){
+            var offerid = req.query.id;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,orderidfk,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtypebank,'+
+                        'orderdate,mmfrom,mmto,mmtype,m.orderamount,orderdate,ccy,bankcomment,tenuredays,recipient,custcomment,ordertypefk,currentstatus, m.orderamount+totalinterest-tax netamount,'+
+                        'm.orderamount+totalinterest maturityamount from offers_mm o left outer join Moneymarketorders m on o.orderidfk=m.orderid where offerid = ? ',[offerid], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -783,6 +832,50 @@ app.post('/add_forward_order', function(req,res){
             });
       });
     });
+
+    app.post('/accept_mm_offer', function(req, res){
+      var offerid = req.body.offerid;
+      console.log('accept_mm_offer', req.body);
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_mm set status = ? where offerid = ?' ,['Accepted',offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_mm_offer successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/accept_mm_offer2', function(req, res){
+      var orderid = req.body.orderid;
+      console.log('accept_mm_offer2', req.body);
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update Moneymarketorders set currentstatus = ? where orderid = ?' ,['Taken',orderid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'accept_mm_offer2 successful',
+                });
+                connection.release();
+            });
+      });
+    });
     
     app.post('/spotorders', function(req,res){
     	//console.log('Data to be saved ...',req.body);
@@ -1027,6 +1120,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_deal ok',
                 });
                 connection.release();
+                io.emit('accept_spot_deal', {title:'Deal accepted'});
             });
       });
     });

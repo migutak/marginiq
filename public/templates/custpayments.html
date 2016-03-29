@@ -1,40 +1,68 @@
-<b>Forex Spot <span class="label label-info">{{spotnotification}}</span></b> | 
-<a href="#/paymentswap">Forex Swap <span class="label label-info">{{swapnotification}}</span></a> | 
-<a href="#/paymentforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
-<a href="#/paymentmm"> Money Markets <span class="label label-info">{{mmnotification}}</span></a>
-<h3>FxSpot Payments</h3>
-<div class="row">
-        <div class="panel panel-default widget">
-            
-            <div class="panel-body">
-                <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="c in custpay">
-                        <div class="row">
-                            
-                            <div class="col-xs-10 col-md-11">
-                                <div>
-                                    <a href="">
-                                        {{c.buysell}}
-                                    </a>
-                                    <div class="mic-info">
-                                        {{c.ccypair}}: <a href="">Order amount: {{c.orderamount | number:0}}</a> on {{c.orderdate}}
-                                    </div>
-                                </div>
-                                <div class="comment-text">
-                                    Settlement Date : {{c.settlementdate}}
-                                </div>
+<style type="text/css">
+    li {list-style-type: none;}
+</style>
+
+<div class="container">
+<b>Forex Spot <span class="label label-danger">{{payments_spot_notification}}</span></b> | 
+<a href="#/paymentswap">Forex Swap <span class="label label-info">{{payments_swap_notification}}</span></a> | 
+<a href="#/paymentforward">Forex Forward <span class="label label-info">{{payments_forward_notification}}</span></a> | 
+<a href="#/paymentmm"> Money Markets <span class="label label-info">{{payments_mm_notification}}</span></a>
+</div>
+<h3></h3>
+
+<div class="container">
+            <ul>
+                <li class="dropdown">
+                  <a href="" class="dropdown-toggle" data-toggle="dropdown">Spot Payments <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="">Not Paid <span class="label label-success">{{}}</span></a></li>
+                    <li><a href="">Paid <span class="label label-success">{{}}</span></a></li>
+                    <li><a href="">View All <span class="label label-success">{{}}</span></a></li>
+                  </ul>
+                </li>
+            </ul>
+            <div class="box box-info">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Confirmed Deals</h3>
+                </div>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table no-margin">
+                          <thead>
+                            <tr>
+                              <th>Order ID</th>
+                              <th>Bank name</th>
+                              <th>CCY Pair</th>
+                              <th>Buy/Sell</th>
+                              <th>Order amount</th>
+                              <th>Settlement amount</th>
+                              <th>Status</th>
+                              <th>Settlement date</th>
+                              <th>Payment</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="c in payments_spot">
+                              <td><a href="">{{c.orderidfk}}</a></td>
+                              <td>{{c.usernamefk}}</td>
+                              <td>{{c.ccypair}}</td>
+                              <td>{{c.buysell}}</td>
+                              <td>{{c.orderamountccy}} {{c.orderamount | number}}</td>
+                              <td>{{c.settlementamount}}</td>
+                              <td><span class="label label-success">{{c.status}}</span></td>
+                              <td>{{c.settlementdate}}</td>
+                              <td>
                                 <div class="action">
-                                    <button type="button" class="btn btn-primary btn-xs" title="Pay" ng-click="pay(c.offerid)">
+                                    <button type="button" class="btn btn-primary btn-xs" title="Edit">
                                         <span class="glyphicon glyphicon-pencil"></span> Pay
                                     </button>
-                                    
                                 </div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                </ul>
-                
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+            
         </div>
-    </div>
