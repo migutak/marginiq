@@ -598,7 +598,7 @@
             var offerid = req.query.id;
             connectionpool.getConnection(function(err, connection) {
                     connection.query(
-                        'select offerid,orderidfk,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtypebank,'+
+                        'select offerid,orderidfk,m.orderindex,fixedrate,daycount,totalinterest,tax,netinterest,offeredby,offerdate,status,usernamefk,mmtypebank,'+
                         'orderdate,mmfrom,mmto,mmtype,m.orderamount,orderdate,ccy,bankcomment,tenuredays,recipient,custcomment,ordertypefk,currentstatus, m.orderamount+totalinterest-tax netamount,'+
                         'm.orderamount+totalinterest maturityamount from offers_mm o left outer join Moneymarketorders m on o.orderidfk=m.orderid where offerid = ? ',[offerid], function(err, rows, fields) {
                         if (err) {
@@ -693,7 +693,30 @@
             });
         });
 
-
+        app.get('/all_mm_offers', function(req,res){
+            var domain = req.query.domain;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query(
+                        'select offerid,Moneymarketorders.orderindex,orderidfk,fixedrate,Moneymarketorders.orderamount,daycount,totalinterest,tax,netinterest,bankcomment,offeredby,usernamefk'+
+                        ',ccy,orderdate,offerdate,orderid,mmto,mmfrom,recipient, custcomment,ordertypefk,tenuredays,mmtype,mmtypebank,currentstatus,mmtype,mmtypebank '+
+                        'from offers_mm left join Moneymarketorders on offers_mm.orderindex = Moneymarketorders.orderindex where offeredby = ? and status = ? ',[domain,'Open'], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
                         
 
         app.get('/payments_mm_confirm', function(req,res){
@@ -1089,6 +1112,27 @@ app.post('/add_forward_order', function(req,res){
       });
     });
 
+    app.post('/updateordermmreverse', function(req, res){
+      var orderindex = req.body.orderindex;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update Moneymarketorders set currentstatus = ? where orderindex = ?' ,['N',orderindex], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'updateordermmreverse successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
     app.post('/accept_swap_deal', function(req, res){
       var offerid = req.body.offerid;
       connectionpool.getConnection(function(err, connection) {
@@ -1104,6 +1148,27 @@ app.post('/add_forward_order', function(req,res){
                 res.send({
                     result: 'success',
                     data:   'accept_swap_deal successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/delete_mm_offer', function(req, res){
+      var offerid = req.body.offerid;
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('delete from offers_mm where offerid = ?' ,[offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'delete_offer successful',
                 });
                 connection.release();
             });

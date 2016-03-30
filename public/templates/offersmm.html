@@ -1,6 +1,11 @@
 <!-- Main content -->
-<a href="#/offers">Forex Spot</a> | <a href="#/offersswap">Forex Swap</a> | <a href="#/offersforward">Forex Forward</a> | <b>Money Market</b>
-<h3>Offers Made : MM</h3>
+<div class="container">
+    <a href="#/offers">Forex Spot</a> | 
+    <a href="#/offersswap">Forex Swap</a> | 
+    <a href="#/offersforward">Forex Forward</a> | 
+    <b>Money Market</b>
+</div>
+<h3>Offers Made : Money markets</h3>
 <section class="content">
 <i class="fa fa-arrow-left"></i> <a href="#/homemm">Home</a>
 <div class="cloading"></div>
@@ -34,8 +39,8 @@
                                     <td>{{ord.mmto}}</td>
                                     <td>{{ord.tenuredays}}D</td>
                                     <td>{{ord.fixedrate}}%</td>
-                                    <td>{{ord.totalinterest}}</td>
-                                    <td>{{ord.tax}}</td>
+                                    <td>{{ord.totalinterest | number}}</td>
+                                    <td>{{ord.tax | number}}</td>
                                 </tr>
                                 </tbody>
                             </table>

@@ -1162,4 +1162,12 @@ app.controller('confirmswapofferCtrl', function($scope, $stateParams,$state, $ht
 });
 
 
+app.controller('offersCtrl', function($scope,ordersService){
+	var username = window.sessionStorage.getItem('username');
+	$scope.offers=[];
+	ordersService.all_offers(username).then(function(d) {
+	    $scope.offers = d.data;
+	});
+	
+});
 

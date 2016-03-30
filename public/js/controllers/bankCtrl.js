@@ -719,3 +719,100 @@ app.controller('bookswapdealCtrl', function($scope, $stateParams, $interval,$sta
 	}
 });
 
+app.controller('offersmmCtrl', function($scope,ordersService){
+	var username = window.sessionStorage.getItem('username');
+	var domain = window.sessionStorage.getItem('bankdomain');
+	$scope.mm_offers=[];
+	ordersService.all_mm_offers(domain).then(function(d) {
+	    $scope.mm_offers = d.data.data;
+	});
+	
+});
+
+app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$state,$filter,$timeout,ordersService){
+	var username = window.sessionStorage.getItem('bankuser');
+	var orderid = $stateParams.indexid;
+	var indexid = $stateParams.indexid;
+	$scope.newmmoffer = [];
+	var id = $stateParams.offerid;
+	$scope.offerid = $stateParams.offerid;
+	
+	ordersService.offerdetails_mm(id).then(function(d) {
+		console.log(d.data.data[0]);
+	    $scope.newmmoffer = d.data.data[0];
+	});
+	
+	$scope.editOffer = function(){
+		if ($window.confirm("This will ammend Offer. Do you want to Proceed?")) {
+               $scope.dataLoading = true;
+				$http({
+		              method: 'post',
+		              url: '/ammend_mm_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data:{orderindex:$scope.newmmoffer.orderindex,orderidfk:$scope.newmmoffer.orderidfk,fixedrate:$scope.newmmoffer.rate,orderamount:$scope.newmmoffer.orderamount,daycount:$scope.newmmoffer.tenuredays,
+		              		totalinterest:$scope.newmmoffer.totalinterest2,tax:$scope.newmmoffer.tax2,netinterest:$scope.newmmoffer.netinterest,
+		              		bankcomment:$scope.newmmoffer.bankcomment,offeredby:username}
+		            }).success(function (data) {
+		            	$timeout(function(){
+		            		$scope.dataLoading = false;
+		            		alert("Offer ammended");
+		              		$scope.newmmoffer = {};
+					  		$state.go('homemm');
+		            	},3000,true)
+		              
+		            }).error(function (error) {
+		                alert("Error when making an offer");
+		                $scope.newmmoffer = {};
+						$state.go('homemm');
+		            });	
+		
+					ordersService.updateordermm(indexid).then(function(d){
+						//console.log(d);
+					})     
+            } else {
+              // console.log("You clicked NO.");
+            }
+	};
+	
+	$scope.deleteOffer = function(orderindex){
+		
+			if ($window.confirm("This will withdraw Offer. Do you want to Proceed?")) {
+					$scope.dataLoading = true;
+               		$http({
+		              method: 'POST',
+		              url: '/delete_mm_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {offerid:$scope.offerid}
+		            }).success(function (data) {
+		            	$timeout(function() {
+		            		alert("Offer withdrawn ");
+		            		$scope.dataLoading = false;
+					  		$state.go('offersmm');
+		            	}, 3000);
+		            }).error(function () {
+		                alert("Error withdrawing Offer");
+		                $scope.dataLoading = false;
+						$state.go('offersmm');
+		            });
+
+		            ordersService.updateordermmreverse(orderindex).then(function(d){})
+		            
+            } else {
+            	$scope.dataLoading = false;
+               // console.log("You clicked NO.");
+            }
+	};
+	
+	$scope.fill = function(){
+    	$scope.newmmoffer.totalinterest = $filter('number')($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays,2);
+    	$scope.newmmoffer.totalinterest2 = $scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays;
+    	$scope.newmmoffer.tax = $filter('number')(($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15,2);
+    	$scope.newmmoffer.tax2 = ($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15;
+    	$scope.newmmoffer.netinterest = $filter('number')(($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) - ($scope.newmmoffer.orderamount * ($scope.newmmoffer.rate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15,2);
+    }
+});
+
+
+
+
+

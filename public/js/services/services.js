@@ -249,10 +249,24 @@ app.factory('ordersService', function($http){
 			          }).success(function (response) {
 			            	return response;
 			          }).error(function(err){
-			          		console.log("Error on /all_offers ", err);
+			          		console.log("Error on all_offers ", err);
 			          });
 			          return promise;
 			        },
+			        all_mm_offers: function(domain) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/all_mm_offers',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {domain:domain}
+				      }).success(function (response) {
+				      		console.log('all_mm_offers',response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error on all_mm_offers: "+ error);
+				      });
+				      return promise;
+				    },
 			        accepted_offers: function(username) {
 			            var promise = $http({
 			            		method:'GET',
@@ -495,6 +509,20 @@ app.factory('ordersService', function($http){
 				      var promise = $http({
 				      		method:'post',
 				      		url:'/updateordermm',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderindex:orderindex}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    updateordermmreverse: function(orderindex) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/updateordermmreverse',
 				      		headers: {'Content-Type': 'application/json'},
 				      		data:{orderindex:orderindex}
 				      }).success(function (response) {

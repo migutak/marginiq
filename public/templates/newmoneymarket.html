@@ -11,7 +11,7 @@
 	                <div class="form-group">
 				    	<label class="col-xs-3 control-label">Type</label>
 				    	<div class="col-xs-5 selectContainer">
-				    		<select class="form-control" ng-model="newmmorder.mmtype">
+				    		<select class="form-control" ng-model="newmmorder.mmtype" required>
 		                      <option value="Deposit">Deposit</option>
 		                      <option value="Placement">Placement</option>
 		                    </select>
@@ -32,7 +32,7 @@
 				    			<div class="input-group-addon">
                                     {{ccytitle}}
                                 </div>
-				    			<input type="text" class="form-control" ng-model="newmmorder.orderamount">
+				    			<input type="text" class="form-control" ng-model="newmmorder.orderamount" required>
 				    		</div>
 				    	</div>
 				    </div>
