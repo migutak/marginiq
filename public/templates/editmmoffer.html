@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
         	<div class="cloading"></div>
-            <form method="post" ng-submit="editOffer()" autocomplete="off" name="editofferForm" class="form-horizontal">
+            <form method="post" ng-submit="editmmOffer()" autocomplete="off" name="editofferForm" class="form-horizontal">
                 <div class="box-body">
                     <div class="row">
                     		<div class="col-md-3">
@@ -75,8 +75,10 @@
                     </div>
                 </div><!-- /.box-body -->
                 <div>
-                    <button type="submit" class="btn btn-primary" ng-disabled="editofferForm.$invalid">Submit</button>
-                    <a href="" ng-click="deleteOffer(newmmoffer.orderindex)" class="btn btn-danger">Withdraw</a>
+                    <button type="submit" class="btn btn-info" ng-disabled="editofferForm.$invalid" ng-show="showedit">Update</button>
+                    <a href="" ng-click="btnEdit()" class="btn btn-info" ng-show="!showedit">Edit</a>
+                    <a href="" ng-click="deleteOffer(newmmoffer.offerid)" class="btn btn-danger" ng-show="!showedit">Withdraw</a>
+                    <a href="" ng-click="btnCancel()" class="btn btn-danger" ng-show="showedit">Cancel</a>
                     <img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                 </div>
             </form>

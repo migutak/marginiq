@@ -205,22 +205,58 @@ app.controller('newofferCtrl', function($scope,$stateParams,$http,$filter,$state
 		            $state.go('home');
 		        });	
 		
-		ordersService.updateorder(indexid).then(function(d){
-			//console.log(d);
-		});
+		ordersService.updateorder(indexid).then(function(d){});
 	};
 	
 });
 
-app.controller('offersCtrl', function($scope,ordersService){
+app.controller('offersCtrl', function($scope,ordersService,socketio){
 	var username = window.sessionStorage.getItem('username');
-	$scope.loading = true;
+	var domain = window.sessionStorage.getItem('bankdomain');
 	$scope.offers=[];
-	ordersService.all_offers(username).then(function(d) {
-		console.log(d.data);
-	    $scope.offers = d.data.data;
-	    $scope.loading = false;
-	});
+	$scope.offersswap=[];
+	$scope.offersforward=[];
+	$scope.offersmm=[];
+
+	$scope.spotnotification = 0;
+	$scope.mmnotification = 0;
+	$scope.swapnotification = 0;
+	$scope.forwardnotification = 0;
+
+	all_spot_offers();
+	all_mm_offers();
+	all_forward_offers();
+	all_swap_offers();
+
+
+	function all_spot_offers(){
+		ordersService.all_open_offers(username).then(function(d) {
+			$scope.spotnotification = d.data.data.length;
+		    $scope.offers = d.data.data;
+		});
+	}
+
+	function all_forward_offers(){
+		ordersService.all_open_offers(username).then(function(d) {
+			$scope.forwardnotification = d.data.data.length;
+		    $scope.offersforward = d.data.data;
+		});
+	}
+
+	function all_mm_offers(){
+		ordersService.all_mm_offers(domain).then(function(d) {
+			$scope.mmnotification = d.data.data.length;
+		    $scope.offersmm = d.data.data;
+		});
+	}
+
+	function all_swap_offers(){
+		ordersService.all_swap_offers(username).then(function(d) {
+			$scope.swapnotification = d.data.data.length;
+		    $scope.offersswap = d.data.data;
+		});
+	}
+	
 	
 });
 
@@ -399,7 +435,7 @@ app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ord
 	$scope.holder = 0;
 	
 	ordersService.swaporder(indexid).then(function(d) {
-		console.log(d.data.data[0]);
+		//console.log(d.data.data[0]);
 		$scope.newswapoffer = d.data.data[0];
 		
 		$scope.newswapoffer.orderindex = d.data.data[0].orderindex;
@@ -469,7 +505,7 @@ app.controller('newswapofferCtrl', function($scope,$state,$stateParams,$http,ord
 			$scope.newswapoffer.farofferedrate = parseFloat($scope.newswapoffer.farspotrate) + parseFloat($scope.newswapoffer.farmagin/10000);
 			$scope.newswapoffer.farsellorderamount_disp = $filter('number')(($scope.newswapoffer.farsellorderamount/$scope.newswapoffer.farofferedrate),2);
 		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearsellorderamount>0){
-			$scope.newswapoffer.farofferedrate = parseFloat($scope.newswapoffer.nearspotrate) - parseFloat($scope.newswapoffer.nearmagin/10000);
+			$scope.newswapoffer.farofferedrate = parseFloat($scope.newswapoffer.farspotrate) - parseFloat($scope.newswapoffer.farmagin/10000);
 			$scope.newswapoffer.farbuyorderamount_disp = $filter('number')(($scope.newswapoffer.nearsellorderamount/$scope.newswapoffer.farofferedrate),2);
 		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearbuyorderamount>0){
 			$scope.newswapoffer.farofferedrate = parseFloat($scope.newswapoffer.farspotrate) - parseFloat($scope.newswapoffer.farmagin/10000);
@@ -730,28 +766,36 @@ app.controller('offersmmCtrl', function($scope,ordersService){
 });
 
 app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$state,$filter,$timeout,ordersService){
-	var username = window.sessionStorage.getItem('bankuser');
+	var username = window.sessionStorage.getItem('username');
 	var orderid = $stateParams.indexid;
 	var indexid = $stateParams.indexid;
 	$scope.newmmoffer = [];
-	var id = $stateParams.offerid;
+	$scope.showedit = false;
+	var offerid = $stateParams.offerid;
 	$scope.offerid = $stateParams.offerid;
 	
-	ordersService.offerdetails_mm(id).then(function(d) {
+	ordersService.offerdetails_mm(offerid).then(function(d) {
 		console.log(d.data.data[0]);
 	    $scope.newmmoffer = d.data.data[0];
 	});
+
+	$scope.btnEdit = function(){
+		$scope.showedit = true;
+	}
+
+	$scope.btnCancel = function(){
+		$scope.showedit = false;
+	}
 	
-	$scope.editOffer = function(){
+	$scope.editmmOffer = function(){
 		if ($window.confirm("This will ammend Offer. Do you want to Proceed?")) {
                $scope.dataLoading = true;
 				$http({
 		              method: 'post',
 		              url: '/ammend_mm_offer',
 		              headers: {'Content-Type': 'application/json'},
-		              data:{orderindex:$scope.newmmoffer.orderindex,orderidfk:$scope.newmmoffer.orderidfk,fixedrate:$scope.newmmoffer.rate,orderamount:$scope.newmmoffer.orderamount,daycount:$scope.newmmoffer.tenuredays,
-		              		totalinterest:$scope.newmmoffer.totalinterest2,tax:$scope.newmmoffer.tax2,netinterest:$scope.newmmoffer.netinterest,
-		              		bankcomment:$scope.newmmoffer.bankcomment,offeredby:username}
+		              data:{offerid:$scope.newmmoffer.offerid,fixedrate:$scope.newmmoffer.fixedrate,totalinterest:$scope.newmmoffer.totalinterest,tax:$scope.newmmoffer.tax,
+		              	netinterest:$scope.newmmoffer.netinterest,bankcomment:$scope.newmmoffer.bankcomment}
 		            }).success(function (data) {
 		            	$timeout(function(){
 		            		$scope.dataLoading = false;
@@ -766,20 +810,20 @@ app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$sta
 						$state.go('homemm');
 		            });	
 		
-					ordersService.updateordermm(indexid).then(function(d){
+					//ordersService.updateordermm().then(function(d){
 						//console.log(d);
-					})     
+					//})     
             } else {
               // console.log("You clicked NO.");
             }
 	};
 	
-	$scope.deleteOffer = function(orderindex){
-		
-			if ($window.confirm("This will withdraw Offer. Do you want to Proceed?")) {
+	$scope.deleteOffer = function(offerid){	
+		//console.log($scope.newmmoffer.orderindex);
+			if ($window.confirm("This will withdraw offer. Do you want to Proceed?")) {
 					$scope.dataLoading = true;
                		$http({
-		              method: 'POST',
+		              method: 'post',
 		              url: '/delete_mm_offer',
 		              headers: {'Content-Type': 'application/json'},
 		              data : {offerid:$scope.offerid}
@@ -795,11 +839,10 @@ app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$sta
 						$state.go('offersmm');
 		            });
 
-		            ordersService.updateordermmreverse(orderindex).then(function(d){})
+		            ordersService.updateordermmreverse($scope.newmmoffer.orderindex).then(function(d){})
 		            
             } else {
             	$scope.dataLoading = false;
-               // console.log("You clicked NO.");
             }
 	};
 	
@@ -812,7 +855,262 @@ app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$sta
     }
 });
 
+app.controller('editofferCtrl',function($scope,$stateParams,$http,$window,$state,ordersService){
+	$scope.editoffer = [];
+	$scope.showedit = false;
+	var offerid = $stateParams.offerid;
+	$scope.offerid = $stateParams.offerid;
+	ordersService.offerdetails(offerid).then(function(d) {
+		console.log(d.data.data[0]);
+	    $scope.editoffer = d.data.data[0];
+	});
+
+	$scope.btnEdit = function(){
+		$scope.showedit = true;
+	}
+
+	$scope.btnCancel = function(){
+		$scope.showedit = false;
+	}
+	
+	$scope.editOffer = function(offerid){
+		if ($window.confirm("This will ammend offer. Do you want to Proceed?")) {
+				$scope.dataLoading = true;
+               		$http({
+		              method: 'POST',
+		              url: '/edit_spot_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {offerid:$scope.editoffer.offerid,spotrate:$scope.editoffer.spotrate,magin:$scope.editoffer.magin,settleamount:$scope.editoffer.settleamount,offeredrate:$scope.editoffer.offeredrate,
+		              	offercomment:$scope.editoffer.offercomment}
+		            }).success(function (data) {
+		              alert("offer ammended");
+		              $scope.dataLoading = false;
+					  $state.go('offers');
+		            }).error(function () {
+		              alert("Error when ammending Offer");
+		              $scope.dataLoading = false;
+					  $state.go('offers');
+		            });
+		            
+            } else {
+               $scope.dataLoading = false;
+            }
+	};
+	
+	$scope.deleteOffer = function(orderindex){
+			if ($window.confirm("This will withdraw offer. Do you want to Proceed?")) {
+				$scope.dataLoading = true;
+               		$http({
+		              method: 'post',
+		              url: '/delete_spot_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {offerid:$scope.offerid}
+		            }).success(function (data) {
+		              alert("Offer Withdrawn ");
+		              $scope.dataLoading = false;
+					  $state.go('offers');
+		            }).error(function () {
+		                alert("Error withdrawing Offer");
+		                $scope.dataLoading = false;
+						$state.go('offers');
+		            });
+
+		            ordersService.updateorderreverse(orderindex).then(function(d){})
+		            
+            } else {
+               $scope.dataLoading = false;
+            }
+	};
+	
+	$scope.fill = function(){
+		$scope.editoffer.offeredrate = ($scope.editoffer.spotrate|0) + ($scope.editoffer.magin)/100|0;
+		$scope.editoffer.settleamount = ($scope.editoffer.orderamount*$scope.editoffer.offeredrate);
+	};
+});
 
 
+app.controller('editofferswapCtrl',function($scope,$stateParams,$http,$window,$filter,$state,ordersService){
+	var username = window.sessionStorage.getItem('username');
+	$scope.newswapoffer = [];
+	$scope.showedit = false;
+	var offerid = $stateParams.offerid;
+	$scope.offerid = $stateParams.offerid;
+	
+	ordersService.offer_s_swap_bank(offerid).then(function(d) {
+		console.log('editofferswapCtrl', d.data.data[0]);
+	    $scope.newswapoffer = d.data.data[0];
+	    $scope.newswapoffer.orderindex = d.data.data[0].orderindex;
+	    $scope.newswapoffer.orderidfk = d.data.data[0].orderid;
+	    $scope.newswapoffer.offeredby = username;
+	    $scope.newswapoffer.buysell = d.data.data[0].buysell;
+	    $scope.newswapoffer.neardate = d.data.data[0].neardate;
+	    $scope.newswapoffer.fardate = d.data.data[0].fardate;
+	    $scope.newswapoffer.nearmagin = 0;
+	    //
+	    if($scope.newswapoffer.buysellbank == 'BUY'){
+	    	$scope.holder = -3;
+	    	$scope.newswapoffer.buysellbank_disp = 'BUY(leg 1) - SELL(leg 2)';
+	    	$scope.newswapoffer.nearbuyorderamountccy_disp = $scope.newswapoffer.nearbuyorderamountccy;
+	    	$scope.newswapoffer.nearsellorderamountccy_disp = $scope.newswapoffer.nearsellorderamountccy;
+	    	$scope.newswapoffer.nearbuyorderamount_disp = $scope.newswapoffer.nearbuyorderamount;
+	    	$scope.newswapoffer.nearsellorderamount_disp = $scope.newswapoffer.nearsellorderamount;
+	    	//far leg
+	    	$scope.newswapoffer.farbuyorderamountccy_disp = $scope.newswapoffer.farbuyorderamountccy;
+	    	$scope.newswapoffer.farsellorderamountccy_disp = $scope.newswapoffer.farsellorderamountccy;
+	    	$scope.newswapoffer.farbuyorderamount_disp = $scope.newswapoffer.farbuyorderamount;
+	    	$scope.newswapoffer.farsellorderamount_disp = $scope.newswapoffer.farsellorderamount;
+	    	
+	    }else{
+	    	$scope.holder = 3;
+	    	$scope.newswapoffer.buysellbank_disp = 'SELL(leg 1) - BUY(leg 2)';
+	    	$scope.newswapoffer.nearbuyorderamountccy_disp = $scope.newswapoffer.nearbuyorderamountccy;
+	    	$scope.newswapoffer.nearsellorderamountccy_disp = $scope.newswapoffer.nearsellorderamountccy;
+	    	$scope.newswapoffer.nearbuyorderamount_disp = $scope.newswapoffer.nearbuyorderamount;
+	    	$scope.newswapoffer.nearsellorderamount_disp = $scope.newswapoffer.nearsellorderamount;
+	    	//far leg
+	    	$scope.newswapoffer.farbuyorderamountccy_disp = $scope.newswapoffer.farbuyorderamountccy;
+	    	$scope.newswapoffer.farsellorderamountccy_disp = $scope.newswapoffer.farsellorderamountccy;
+	    	$scope.newswapoffer.farbuyorderamount_disp = $scope.newswapoffer.farbuyorderamount;
+	    	$scope.newswapoffer.farsellorderamount_disp = $scope.newswapoffer.farsellorderamount;
+	    }
+	    $scope.newswapoffer.nearlegamount1 = $filter('limitTo')(d.data.data[0].ccypair,$scope.holder)+d.data.data[0].orderamount;
+	    $scope.newswapoffer.farlegamount1 = $filter('limitTo')(d.data.data[0].ccypair,$scope.holder)+d.data.data[0].orderamount;
+	    
+	    	$scope.newswapoffer.nearlegamount_1ccy = $filter('limitTo')(d.data.data[0].ccypair,$scope.holder);
+			$scope.newswapoffer.nearlegamount_1 = d.data.data[0].orderamount;
+			$scope.newswapoffer.farlegamount_1ccy = $filter('limitTo')(d.data.data[0].ccypair,$scope.holder);
+			$scope.newswapoffer.farlegamount_1 = d.data.data[0].orderamount;
+	});
+
+	$scope.btnEdit = function(){
+		$scope.showedit = true;
+	}
+
+	$scope.btnCancel = function(){
+		$scope.showedit = false;
+	}
+      
+	$scope.editOffer = function(){
+		if ($window.confirm("This will ammend offer. Do you want to Proceed?")) {
+				$scope.dataLoading = true;
+               		$http({
+		              method: 'post',
+		              url: '/edit_swap_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {
+		              	offerid:$stateParams.offerid,nearmargin:$scope.newswapoffer.nearmargin,nearspot:$scope.newswapoffer.nearspot,nearfinal:$scope.newswapoffer.nearfinal,
+		              	nearbuyorderamount:$scope.newswapoffer.nearbuyorderamount_disp,nearsellorderamount:$scope.newswapoffer.nearsellorderamount_disp,
+		              	farspot:$scope.newswapoffer.farspot,farmargin:$scope.newswapoffer.farmargin,farfinal:$scope.newswapoffer.farfinal,
+		              	farbuyorderamount:$scope.newswapoffer.farbuyorderamount_disp,farsellorderamount:$scope.newswapoffer.farsellorderamount_disp
+		              }
+		            }).success(function (data) {
+		              alert("offer ammended");
+		              $scope.dataLoading = false;
+					  $state.go('offersswap');
+		            }).error(function () {
+		              alert("Error when ammending Offer");
+		              $scope.dataLoading = false;
+					  $state.go('offersswap');
+		            });
+		            
+            } else {
+               $scope.dataLoading = false;
+            }
+	};
+	
+	$scope.deleteOffer = function(orderindex){
+			if ($window.confirm("This will withdraw offer. Do you want to Proceed?")) {
+				$scope.dataLoading = true;
+               		$http({
+		              method: 'post',
+		              url: '/delete_swap_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {offerid:$scope.offerid}
+		            }).success(function (data) {
+		              alert("Offer Withdrawn ");
+		              $scope.dataLoading = false;
+					  $state.go('offersswap');
+		            }).error(function () {
+		                alert("Error withdrawing Offer");
+		                $scope.dataLoading = false;
+						$state.go('offersswap');
+		            });
+
+		            ordersService.updateorderreverse(orderindex).then(function(d){})
+		            
+            } else {
+               $scope.dataLoading = false;
+            }
+	};
+	
+	$scope.fill = function(){
+		console.log('fill function', $scope.newswapoffer.buysellbank);
+
+		if($scope.newswapoffer.buysellbank == 'BUY' && $scope.newswapoffer.nearsellorderamount>0){
+			$scope.newswapoffer.nearfinal = parseFloat($scope.newswapoffer.nearspot) - parseFloat($scope.newswapoffer.nearmargin/10000);
+			$scope.newswapoffer.nearsellorderamount_disp = $filter('number')(($scope.newswapoffer.nearsellorderamount*$scope.newswapoffer.nearfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'BUY' && $scope.newswapoffer.nearbuyorderamount>0){
+			$scope.newswapoffer.nearfinal = parseFloat($scope.newswapoffer.nearspot) - parseFloat($scope.newswapoffer.nearmargin/10000);
+			$scope.newswapoffer.nearbuyorderamount_disp = $filter('number')(($scope.newswapoffer.nearbuyorderamount/$scope.newswapoffer.nearfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearsellorderamount>0){
+			$scope.newswapoffer.nearfinal = parseFloat($scope.newswapoffer.nearspot) + parseFloat($scope.newswapoffer.nearmargin/10000);
+			$scope.newswapoffer.nearbuyorderamount_disp = $filter('number')(($scope.newswapoffer.nearsellorderamount*$scope.newswapoffer.nearfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearbuyorderamount>0){
+			$scope.newswapoffer.nearfinal = parseFloat($scope.newswapoffer.nearspot) + parseFloat($scope.newswapoffer.nearmargin/10000);
+			$scope.newswapoffer.nearsellorderamount_disp = $filter('number')(($scope.newswapoffer.nearbuyorderamount/$scope.newswapoffer.nearfinal),2);
+		}
+	}
+	
+	$scope.fill_far = function(){
+		if($scope.newswapoffer.buysellbank == 'BUY' && $scope.newswapoffer.nearsellorderamount>0){
+
+			$scope.newswapoffer.farfinal = parseFloat($scope.newswapoffer.farspot) + parseFloat($scope.newswapoffer.farmargin/10000);
+			$scope.newswapoffer.farbuyorderamount_disp = $filter('number')(($scope.newswapoffer.farbuyorderamount*$scope.newswapoffer.farfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'BUY' && $scope.newswapoffer.nearbuyorderamount>0){
+
+			$scope.newswapoffer.farfinal = parseFloat($scope.newswapoffer.farspot) + parseFloat($scope.newswapoffer.farmargin/10000);
+			$scope.newswapoffer.farsellorderamount_disp = $filter('number')(($scope.newswapoffer.farsellorderamount/$scope.newswapoffer.farfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearsellorderamount>0){
+
+			$scope.newswapoffer.farfinal = parseFloat($scope.newswapoffer.nearspot) - parseFloat($scope.newswapoffer.nearmargin/10000);
+			$scope.newswapoffer.farsellorderamount_disp = $filter('number')(($scope.newswapoffer.nearsellorderamount*$scope.newswapoffer.farfinal),2);
+		}else if($scope.newswapoffer.buysellbank == 'SELL' && $scope.newswapoffer.nearbuyorderamount>0){
+			$scope.newswapoffer.farfinal = parseFloat($scope.newswapoffer.farspot) - parseFloat($scope.newswapoffer.farmargin/10000);
+			$scope.newswapoffer.farbuyorderamount_disp = $filter('number')(($scope.newswapoffer.farsellorderamount/$scope.newswapoffer.farfinal),2);
+		}
+	}
+		
+	$scope.newswapOffer =function(){
+		$scope.dataLoading = true;
+		$scope.newswapoffer.offeredby = username;
+					$http({
+		              method: 'post',
+		              url: '/new_swap_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data:{orderindex:$scope.newswapoffer.orderindex,orderidfk:$scope.newswapoffer.orderid,nearspotrate:$scope.newswapoffer.nearspotrate,nearmargin:$scope.newswapoffer.nearmagin,nearfinal:$scope.newswapoffer.nearofferedrate,
+		              		nearbuyorderamountccy:$scope.newswapoffer.nearbuyorderamountccy_disp,nearbuyorderamount:$scope.newswapoffer.nearbuyorderamount_disp,nearsellorderamountccy:$scope.newswapoffer.nearsellorderamountccy_disp,nearsellorderamount:$scope.newswapoffer.nearsellorderamount_disp,
+		              		neardate:$scope.newswapoffer.neardate,farspot:$scope.newswapoffer.farspotrate,farmargin:$scope.newswapoffer.farmagin,farfinal:$scope.newswapoffer.farofferedrate
+		              	,farbuyorderamountccy:$scope.newswapoffer.farbuyorderamountccy_disp,farbuyorderamount:$scope.newswapoffer.farbuyorderamount_disp,farsellorderamountccy:$scope.newswapoffer.farsellorderamountccy_disp,farsellorderamount:$scope.newswapoffer.farsellorderamount_disp
+		              	,fardate:$scope.newswapoffer.fardate,comment:$scope.newswapoffer.bankcomment,offeredby:domain,bankuser:username
+		              }
+		            }).success(function (data) {
+		            	$timeout(function() {
+		            		alert("FxSwap Offer Submitted");
+		              		$scope.dataLoading = true;
+		              		$scope.newswapoffer = {};
+					  		$state.go('homeswap');
+		            	}, 3000);
+		              
+		            }).error(function (err) {
+		                alert("Error making Fxswap offer");
+		                $scope.dataLoading = true;
+		                console.log(err)
+		                $scope.newswapoffer = {};
+						$state.go('homeswap');
+		            });	
+
+		ordersService.updateorderswap($scope.newswapoffer.orderid).then(function(d){})
+	}
+});
 
 

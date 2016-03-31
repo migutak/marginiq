@@ -71,10 +71,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/offersswap",
 		templateUrl : "templates/offersswap.html",
 		controller : 'offersCtrl'
+	}).state('offersforward', {
+		url : "/offersforward",
+		templateUrl : "templates/offersforward.html",
+		controller : 'offersCtrl'
 	}).state('offersmm', {
 		url : "/offersmm",
 		templateUrl : "templates/offersmm.html",
-		controller : 'offersmmCtrl'
+		controller : 'offersCtrl'
 	}).state('acceptedoffers', {
 		url : "/acceptedoffers",
 		templateUrl : "templates/acceptedoffers.html",
@@ -147,6 +151,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/editOffer/:offerid",
 		templateUrl : "templates/editoffer.html",
 		controller : 'editofferCtrl'
+	}).state('editforwardOffer', {
+		url : "/editforwardOffer/:offerid",
+		templateUrl : "templates/editforwardoffer.html",
+		controller : 'editofferCtrl'
+	}).state('editswapOffer', {
+		url : "/editswapOffer/:offerid",
+		templateUrl : "templates/editswapoffer.html",
+		controller : 'editofferswapCtrl'
 	}).state('editmmOffer', {
 		url : "/editmmOffer/:offerid",
 		templateUrl : "templates/editmmoffer.html",

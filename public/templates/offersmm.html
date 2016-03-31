@@ -1,11 +1,11 @@
 <!-- Main content -->
 <div class="container">
-    <a href="#/offers">Forex Spot</a> | 
-    <a href="#/offersswap">Forex Swap</a> | 
-    <a href="#/offersforward">Forex Forward</a> | 
-    <b>Money Market</b>
+    <a href="#/offers">Forex Spot <span class="label label-info">{{spotnotification}}</span></a> | 
+    <a href="#/offersswap">Forex Swap <span class="label label-info">{{swapnotification}}</span></a> | 
+    <a href="#/offersforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
+    <b>Money Market <span class="label label-danger">{{mmnotification}}</span></b>
 </div>
-<h3>Offers Made : Money markets</h3>
+<h3> Offers made : Money markets</h3>
 <section class="content">
 <i class="fa fa-arrow-left"></i> <a href="#/homemm">Home</a>
 <div class="cloading"></div>
@@ -29,7 +29,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="ord in mm_offers">
+                                <tr ng-repeat="ord in offersmm">
                                     <td><a class="btn btn-info" href="#/editmmOffer/{{ord.offerid}}"><i class="fa fa-pencil"></i></a></td>
                                     <td>{{ord.orderidfk}}</td>
                                     <td>{{ord.usernamefk}}</td>

@@ -1,9 +1,14 @@
 <!-- Main content -->
-<a href="#/offers">Forex Spot</a> | <b>Forex Swap</b> | <a href="#/offersforward">Forex Forward</a> | <a href="#/offersmm">Money Market</a>
-<h3>Offers Made : FxSwap</h3>
+<div class="container">
+    <a href="#/offers">Forex Spot <span class="label label-info">{{spotnotification}}</span></a> | 
+    <b>Forex Swap <span class="label label-danger">{{swapnotification}}</span></b> | 
+    <a href="#/offersforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
+    <a href="#/offersmm">Money Market <span class="label label-info">{{mmnotification}}</span></a>
+</div>
+
+<h3>Offers made : FxSwap</h3>
 <section class="content">
 <i class="fa fa-arrow-left"></i> <a href="#/homeswap">Home</a>
-<div class="cloading"></div>
     <div class="row">
         <div class="col-md-12">
                 <div class="table-responsive">
@@ -15,24 +20,24 @@
                                     <th>Customer</th>
                                     <th>Ccy Pair</th>
                                     <th>Buy/Sell</th>
-                                    <th>Ccy/Buy Amount</th>
-                                    <th>Offered Rate</th>
-                                    <th>Ccy/Sell Amount</th>
-                                    <th>Settlement Date</th>
+                                    <th>Near date</th>
+                                    <th>Near Rate</th>
+                                    <th>Far date</th>
+                                    <th>Far rate</th>
                                     <th>Status</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="ord in offers">
-                                    <td><a class="btn btn-info" href="#/editOffer/{{ord.offerid}}"><i class="fa fa-pencil"></i></a></td>
+                                <tr ng-repeat="ord in offersswap">
+                                    <td><a class="btn btn-info" href="#/editswapOffer/{{ord.offerid}}"><i class="fa fa-pencil"></i></a></td>
                                     <td>{{ord.orderidfk}}</td>
                                     <td>{{ord.usernamefk}}</td>
                                     <td>{{ord.ccypair}}</td>
                                     <td>{{ord.buysellbank}}</td>
-                                    <td>{{ord.ccypair | limitTo:ord.limitnum}} {{ord.buy_orderamount | number}}</td>
-                                    <td>{{ord.offeredrate}}</td>
-                                    <td>{{ord.ccypair | limitTo:-ord.limitnum}} {{ord.sell_orderamount | number}}</td>
-                                    <td>{{ord.settlementdate}}</td>
+                                    <td>{{ord.neardate}}</td>
+                                    <td>{{ord.nearfinal}}</td>
+                                    <td>{{ord.fardate}}</td>
+                                    <td>{{ord.farfinal}}</td>
                                     <td>{{ord.status}}</td>
                                 </tr>
                                 </tbody>

@@ -253,6 +253,19 @@ app.factory('ordersService', function($http){
 			          });
 			          return promise;
 			        },
+			        all_open_offers: function(username) {
+			          var promise = $http({
+			          		method:'GET',
+			          		url:'/all_offers_open',
+			          		headers: {'Content-Type': 'application/json'},
+			          		params:	 {id:username}
+			          }).success(function (response) {
+			            	return response;
+			          }).error(function(err){
+			          		console.log("Error on all_offers ", err);
+			          });
+			          return promise;
+			        },
 			        all_mm_offers: function(domain) {
 				      var promise = $http({
 				      		method:'GET',
@@ -313,6 +326,19 @@ app.factory('ordersService', function($http){
 			                var promise = $http({
 			                		method:'GET',
 			                		url:'/accepted_swap_offers',
+			                		headers: {'Content-Type': 'application/json'},
+			                		params:	 {username:username}
+			                }).success(function (response) {
+			                  	return response;
+			                }).error(function(error){
+			                	alert("Error: "+ error);
+			                });
+			                return promise;
+			           },
+			           all_swap_offers: function(username) {
+			                var promise = $http({
+			                		method:'GET',
+			                		url:'/all_swap_offers',
 			                		headers: {'Content-Type': 'application/json'},
 			                		params:	 {username:username}
 			                }).success(function (response) {
@@ -533,6 +559,48 @@ app.factory('ordersService', function($http){
 				      		});
 				      return promise;
 				    },
+				    updateorderreverse: function(orderindex) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/updateorderreverse',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderindex:orderindex}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    updateorderswapreverse: function(orderindex) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/updateorderswapreverse',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderindex:orderindex}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
+				    updateorderforwardreverse: function(orderindex) {
+				      var promise = $http({
+				      		method:'post',
+				      		url:'/updateorderforwardreverse',
+				      		headers: {'Content-Type': 'application/json'},
+				      		data:{orderindex:orderindex}
+				      }).success(function (response) {
+				      			//console.log(response);
+				        		return response;
+				      		}).error(function(error){
+				      			console.log("Error: "+error);
+				      		});
+				      return promise;
+				    },
 				    updateorderswap: function(orderindex) {
 				      var promise = $http({
 				      		method:'post',
@@ -705,7 +773,21 @@ app.factory('ordersService', function($http){
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:{id:x}
 				      }).success(function (response) {
-				      			console.log(response);
+				      			//console.log(response);
+				        		return response;
+				      }).error(function(error){
+				      			console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    offer_s_swap_bank: function(offerid) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/get_s_swap_offer_bank',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:{offerid:offerid}
+				      }).success(function (response) {
+				      			//console.log(response);
 				        		return response;
 				      }).error(function(error){
 				      			console.log("Error: "+error);
