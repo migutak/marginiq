@@ -363,6 +363,30 @@
         });
 
 
+        app.get('/all_open_offers_forward', function(req,res){
+            var domain = req.query.domain;
+            connectionpool.getConnection(function(err, connection) {
+                    connection.query('select offerid,orderidfk,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,buyorderamount+sellorderamount orderamount,if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,'+
+                            'ccypair,orderdate,buyorderamountccy,buyorderamount,sellorderamountccy,sellorderamount,buysell,buysellbank,currentstatus,recipient,bankcomment, custcomment,ordertypefk from offers_forward f left outer join Forwardorders o on f.orderidfk = o.orderid where offeredby = ? ',[domain], function(err, rows, fields) {
+                        if (err) {
+                            console.error(err);
+                            res.statusCode = 500;
+                            res.send({
+                                result: 'error',
+                                err:    err.code
+                            });
+                        }
+                        res.send({
+                            result: 'success',
+                            data:   rows,
+                            length: rows.length
+                        });
+                        connection.release();
+                    });
+            });
+        });
+
+
       app.get('/get_all_swap_orders/:username', function(req,res){
           var username = req.params.username;
             connectionpool.getConnection(function(err, connection) {
@@ -1169,6 +1193,33 @@ app.post('/add_forward_order', function(req,res){
       var orderindex = req.body.orderindex;
       connectionpool.getConnection(function(err, connection) {
             connection.query('Update Moneymarketorders set currentstatus = ? where orderindex = ?' ,['N',orderindex], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'updateordermmreverse successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
+    app.post('/ammend_mm_offer', function(req, res){
+      var fixedrate = req.body.fixedrate;
+      var totalinterest = req.body.totalinterest;
+      var tax = req.body.tax;
+      var netinterest = req.body.netinterest;
+      var bankcomment = req.body.bankcomment;
+      var offerid = req.body.offerid;
+
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_mm set fixedrate=?,totalinterest=?,tax=?,netinterest=?,bankcomment=? where offerid = ?' ,[fixedrate,totalinterest,tax,netinterest,bankcomment,offerid], function(err, rows, fields) {
                 if (err) {
                     console.error(err);
                     res.statusCode = 500;

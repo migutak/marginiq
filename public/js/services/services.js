@@ -266,6 +266,20 @@ app.factory('ordersService', function($http){
 			          });
 			          return promise;
 			        },
+			        all_open_offers_forward: function(domain) {
+			          var promise = $http({
+			          		method:'get',
+			          		url:'/all_open_offers_forward',
+			          		headers: {'Content-Type': 'application/json'},
+			          		params:	 {domain:domain}
+			          }).success(function (response) {
+			          		//console.log(response);
+			            	return response;
+			          }).error(function(err){
+			          		console.log("Error on all_offers ", err);
+			          });
+			          return promise;
+			        },
 			        all_mm_offers: function(domain) {
 				      var promise = $http({
 				      		method:'GET',
@@ -273,7 +287,7 @@ app.factory('ordersService', function($http){
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {domain:domain}
 				      }).success(function (response) {
-				      		console.log('all_mm_offers',response);
+				      		//console.log('all_mm_offers',response);
 				        	return response;
 				      }).error(function(error){
 				      		alert("Error on all_mm_offers: "+ error);

@@ -237,7 +237,8 @@ app.controller('offersCtrl', function($scope,ordersService,socketio){
 	}
 
 	function all_forward_offers(){
-		ordersService.all_open_offers(username).then(function(d) {
+		ordersService.all_open_offers_forward(domain).then(function(d) {
+			//console.log('all_forward_offers', d.data.data[0]);
 			$scope.forwardnotification = d.data.data.length;
 		    $scope.offersforward = d.data.data;
 		});
@@ -773,10 +774,20 @@ app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$sta
 	$scope.showedit = false;
 	var offerid = $stateParams.offerid;
 	$scope.offerid = $stateParams.offerid;
+	$scope.intdays = 365;
 	
 	ordersService.offerdetails_mm(offerid).then(function(d) {
 		console.log(d.data.data[0]);
 	    $scope.newmmoffer = d.data.data[0];
+	    $scope.newmmoffer.orderindex = d.data.data[0].orderindex;
+	    $scope.newmmoffer.orderidfk = d.data.data[0].orderid;
+	    $scope.newmmoffer.dealtype = d.data.data[0].mmtypebank;
+	    //$scope.Data.pagetitle = 'New '+ d.data.data[0].mmtypebank+' order';
+	    //for interest rate currency days
+	    ordersService.get_a_currency(d.data.data[0].ccy).then(function(d) {
+	    	//console.log('CCy int days is '+d.data[0].intdays);
+	    	$scope.intdays = d.data.data[0].intdays;
+	    })
 	});
 
 	$scope.btnEdit = function(){
@@ -847,11 +858,13 @@ app.controller('editmmofferCtrl',function($scope,$stateParams,$http,$window,$sta
 	};
 	
 	$scope.fill = function(){
+		
     	$scope.newmmoffer.totalinterest = $filter('number')($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays,2);
     	$scope.newmmoffer.totalinterest2 = $scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays;
     	$scope.newmmoffer.tax = $filter('number')(($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15,2);
     	$scope.newmmoffer.tax2 = ($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15;
-    	$scope.newmmoffer.netinterest = $filter('number')(($scope.newmmoffer.orderamount * ($scope.newmmoffer.fixedrate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) - ($scope.newmmoffer.orderamount * ($scope.newmmoffer.rate/100) * $scope.newmmoffer.tenuredays/$scope.intdays) * 0.15,2);
+    	$scope.newmmoffer.netinterest = $filter('number')(parseFloat($scope.newmmoffer.totalinterest2)-parseFloat($scope.newmmoffer.tax2),2);
+    //console.log('fill function', parseFloat($scope.newmmoffer.totalinterest2)-parseFloat($scope.newmmoffer.tax2));
     }
 });
 
@@ -1113,4 +1126,41 @@ app.controller('editofferswapCtrl',function($scope,$stateParams,$http,$window,$f
 	}
 });
 
+app.controller('editforwardofferCtrl', function($scope){
+	$scope.showedit = false;
 
+
+	$scope.btnEdit = function(){
+		$scope.showedit = true;
+	}
+
+	$scope.btnCancel = function(){
+		$scope.showedit = false;
+	}
+
+	$scope.deleteOffer = function(orderindex){
+			if ($window.confirm("This will withdraw offer. Do you want to Proceed?")) {
+				$scope.dataLoading = true;
+               		$http({
+		              method: 'post',
+		              url: '/delete_swap_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data : {offerid:$scope.offerid}
+		            }).success(function (data) {
+		              alert("Offer Withdrawn ");
+		              $scope.dataLoading = false;
+					  $state.go('offersswap');
+		            }).error(function () {
+		                alert("Error withdrawing Offer");
+		                $scope.dataLoading = false;
+						$state.go('offersswap');
+		            });
+
+		            ordersService.updateorderreverse(orderindex).then(function(d){})
+		            
+            } else {
+               $scope.dataLoading = false;
+            }
+	};
+
+})

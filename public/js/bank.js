@@ -163,5 +163,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/editmmOffer/:offerid",
 		templateUrl : "templates/editmmoffer.html",
 		controller : 'editmmofferCtrl'
+	}).state('editforwardoffer', {
+		url : "/editforwardoffer/:offerid",
+		templateUrl : "templates/editforwardoffer.html",
+		controller : 'editforwardofferCtrl'
 	})
 })
