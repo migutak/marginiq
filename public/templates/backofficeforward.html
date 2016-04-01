@@ -6,6 +6,16 @@
             <div class="box box-info">
                 <div class="box-header with-border">
                   <h3 class="box-title">Confirmed Deals</h3>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa fa-reorder"></i> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a ng-click="$event.preventDefault();archiveBtn('ALL')" href="">All</a></li>
+                      <li><a ng-click="$event.preventDefault();archiveBtn('PAID')" href="">Confimed Paid</a></li>
+                      <li><a ng-click="$event.preventDefault();archiveBtn('NOTPAID')" href="">Not Paid</a></li>
+                    </ul>                   
+                  </div>
                 </div>
                 <div class="box-body">
                     <div class="table-responsive">
@@ -37,8 +47,8 @@
                               <td>{{c.startdate}}</td>
                               <td>
                                 <div class="action">
-                                    <button type="button" class="btn btn-primary btn-xs" title="Edit">
-                                        <span class="glyphicon glyphicon-pencil"></span> View
+                                    <button type="button" class="btn btn-primary btn-xs" ng-click="payforaward(c.offerid)">
+                                        <span class="glyphicon glyphicon-ok"></span> confirm
                                     </button>
                                 </div>
                               </td>

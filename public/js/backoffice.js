@@ -61,6 +61,21 @@ myapp.config(function($stateProvider, $urlRouterProvider) {
 		url : "/homemm",
 		templateUrl : "templates/backofficemm.html",
 		controller : 'backofficeCtrl'
+	}).state('rptconfirmations', {
+		url : "/rptconfirmations",
+		templateUrl : "templates/rptconfirmations.html"
+	}).state('rptexceptions', {
+		url : "/rptexceptions",
+		templateUrl : "templates/rptexceptions.html"
+	}).state('rptpayments', {
+		url : "/rptpayments",
+		templateUrl : "templates/rptpayments.html"
+	}).state('rptdeclines', {
+		url : "/rptdeclines",
+		templateUrl : "templates/rptdeclines.html"
+	}).state('rptoverdue', {
+		url : "/rptoverdue",
+		templateUrl : "templates/rptoverdue.html"
 	})
 })	
 	
