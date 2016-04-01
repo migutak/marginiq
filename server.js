@@ -342,7 +342,7 @@
         app.get('/get_a_forward_offer/:offerid', function(req,res){
             var offerid = req.params.offerid;
             connectionpool.getConnection(function(err, connection) {
-                    connection.query('select offerid,orderidfk,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,buyorderamount+sellorderamount orderamount,if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,'+
+                    connection.query('select offerid,orderidfk,o.orderindex,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,buyorderamount+sellorderamount orderamount,if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,'+
                             'ccypair,orderdate,buyorderamountccy,buyorderamount,sellorderamountccy,sellorderamount,buysell,buysellbank,currentstatus,recipient,bankcomment, custcomment,ordertypefk from offers_forward f left outer join Forwardorders o on f.orderidfk = o.orderid where offerid = ? ',[offerid], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
@@ -367,7 +367,7 @@
             var domain = req.query.domain;
             connectionpool.getConnection(function(err, connection) {
                     connection.query('select offerid,orderidfk,spot,margin,finalrate,f.settlementdate,offeredby,settlementamountccy,settlementamount,offerdate,usernamefk,freq,freqnum,startdate,buyorderamount+sellorderamount orderamount,if(buyorderamount>0,buyorderamountccy,sellorderamountccy) orderamountccy,'+
-                            'ccypair,orderdate,buyorderamountccy,buyorderamount,sellorderamountccy,sellorderamount,buysell,buysellbank,currentstatus,recipient,bankcomment, custcomment,ordertypefk from offers_forward f left outer join Forwardorders o on f.orderidfk = o.orderid where offeredby = ? ',[domain], function(err, rows, fields) {
+                            'ccypair,orderdate,buyorderamountccy,buyorderamount,sellorderamountccy,sellorderamount,buysell,buysellbank,currentstatus,recipient,bankcomment, custcomment,ordertypefk from offers_forward f left outer join Forwardorders o on f.orderidfk = o.orderid where offeredby = ? and status=? ',[domain,'Open'], function(err, rows, fields) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -1321,6 +1321,34 @@ app.post('/add_forward_order', function(req,res){
       });
     });
 
+    app.post('/update_forward_offer', function(req, res){
+      var offerid = req.body.offerid;
+      var spot = req.body.spot;
+      var margin = req.body.margin;
+      var settlementamountccy = req.body.settlementamountccy;
+      var settlementamount = req.body.settlementamount;
+      var bankcomment = req.body.bankcomment;
+      var finalrate = req.body.finalrate;
+
+      connectionpool.getConnection(function(err, connection) {
+            connection.query('Update offers_forward set spot = ?,margin=?,finalrate=?,settlementamountccy=?,settlementamount=?,bankcomment=? where offerid = ?' ,[spot,margin,finalrate,settlementamountccy,settlementamount,bankcomment,offerid], function(err, rows, fields) {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.send({
+                        result: 'error',
+                        err:    err.code
+                    });
+                }
+                res.send({
+                    result: 'success',
+                    data:   'update_forward_offer successful',
+                });
+                connection.release();
+            });
+      });
+    });
+
     app.post('/delete_mm_offer', function(req, res){
       var offerid = req.body.offerid;
       connectionpool.getConnection(function(err, connection) {
@@ -1533,6 +1561,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_swap_offer successful',
                 });
                 connection.release();
+                io.emit('accepted offer')
             });
       });
     });
@@ -1576,6 +1605,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_mm_offer successful',
                 });
                 connection.release();
+                io.emit('accepted offer')
             });
       });
     });
@@ -1934,6 +1964,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_offer ok',
                 });
                 connection.release();
+                io.emit('accepted offer');
             });
     	});
     });
@@ -1955,6 +1986,7 @@ app.post('/add_forward_order', function(req,res){
                     data:   'accept_forward_offer ok',
                 });
                 connection.release();
+                io.emit('accepted offer');
             });
         });
     });

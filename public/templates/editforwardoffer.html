@@ -1,8 +1,9 @@
 <!-- Main content -->
+<i class="fa fa-arrow-left"></i> <a href="#/offersforward">Back</a>
 <section class="container">
     <div class="row">
         <div class="col-md-12">
-            <form method="post" ng-submit="newforwardOffer()" autocomplete="off" name="newofferForm">
+            <form method="post" ng-submit="updateforwardOffer()" autocomplete="off" name="newofferForm">
                 <div class="box-body">
                     <div class="row">
                     		<div class="col-md-3">
@@ -22,11 +23,11 @@
                     		
                     		<div class="col-md-3">
                     		    <label>Forward Rate</label>
-                                <input type="text" class="form-control" id="forwardrate" ng-model="newforwardoffer.forwardrate" required>
+                                <input type="text" class="form-control" id="forwardrate" ng-model="newforwardoffer.spot" ng-blur="fill()" required>
                     		</div>
                     		<div class="col-md-3">
                     		    <label>Margin</label>
-                                <input type="text" class="form-control" id="magin" ng-model="newforwardoffer.magin" ng-blur="fill()" required>
+                                <input type="text" class="form-control" id="magin" ng-model="newforwardoffer.magin" ng-blur="fill()">
                     		</div>
                     		<div class="col-md-3">
                     		    <label>Final Rate</label>

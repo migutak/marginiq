@@ -212,6 +212,18 @@ app.factory('ordersService', function($http){
 			        });
 			        return promise;
 			      },
+			      forwardoffer_bank: function(offerid) {
+			        var promise = $http({
+			        		method:'GET',
+			        		url:'/get_a_forward_offer/'+ offerid,
+			        		headers: {'Content-Type': 'application/json'}
+			        }).success(function (response) {
+			          		return response;
+			        }).error(function(err){
+			        		console.log("Error: "+err);
+			        });
+			        return promise;
+			      },
 			      offerdetails: function(x) {
 			          var promise = $http({
 			          		method:'GET',
@@ -842,18 +854,28 @@ app.factory('ordersService', function($http){
 	
 });
 
-app.factory('Data', function () {
+app.service('Data', function () {
 
     var data = {
-        pagetitle: ''
+        pagetitle: 'Test'
     };
 
     return {
-        getFirstName: function () {
+        getTitle: function () {
             return data.pagetitle;
         },
-        setFirstName: function (pagetitle) {
+        setTitle: function (pagetitle) {
             data.pagetitle = pagetitle;
         }
     };
 });
+
+app.service('titleService', function () {
+     var Title = {
+        name: ''
+    };
+    return Title;
+});
+
+
+

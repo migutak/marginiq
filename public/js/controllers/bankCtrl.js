@@ -1,12 +1,78 @@
 var app = angular.module('bankCtrl', ['marginService','ui-notification']);
 
-app.controller('indexCtrl', function($scope,$window,AuthService,socketio){
-	$scope.msgNotification = [{title:"sample Msg"}]
-	socketio.on('ticket', function(msg){
-		$scope.msgNotification.push({title:msg});
-		//console.log(msg);
+app.controller('indexCtrl', function($scope,$window,AuthService,Data,socketio,titleService,ordersService){
+	var username = window.sessionStorage.getItem('username');
+	var domain = window.sessionStorage.getItem('bankdomain');
+
+	$scope.acceptedoffersnotification = 0;
+	$scope.bidsaccepted = 0;
+
+	$scope.Title = titleService;
+	$scope.Title.name = "spot orders";
+
+	socketio.on('new spot offer', function(msg){
+		notify();
 	});
+
+	socketio.on('new mm offer', function(msg){
+		notify();
+	});
+
+	socketio.on('new forward offer', function(msg){
+		notify();
+	});
+
+	socketio.on('new swap offer', function(msg){
+		notify();
+	});
+
+	socketio.on('accepted offer', function(msg){
+		bidsnotify();
+	});
+
+notify();
+bidsnotify();
+
+	function notify(){
+		ordersService.all_open_offers(username).then(function(d) {
+			$scope.spotnotification = d.data.data.length;
+		});
+
+		ordersService.all_open_offers_forward(domain).then(function(d) {
+			$scope.forwardnotification = d.data.data.length;
+		});
+
+		ordersService.all_mm_offers(domain).then(function(d) {
+			$scope.mmnotification = d.data.data.length;
+		});
+
+		ordersService.all_swap_offers(username).then(function(d) {
+			$scope.swapnotification = d.data.data.length;
+			$scope.acceptedoffersnotification = $scope.swapnotification + $scope.mmnotification + $scope.spotnotification + $scope.forwardnotification;
+		});
+	};
+function bidsnotify(){
+	ordersService.accepted_offers(username).then(function(d){
+		$scope.bidsspotnotification = d.data.data.length;		
+	})
+	ordersService.accepted_buy_offers(username).then(function(d){
+		$scope.bidsbuynotification = d.data.data.length;
+	})
+
+	ordersService.accepted_forward_offers(username).then(function(d){
+		$scope.bidsforwardnotification = d.data.data.length;
+	})
+
+	ordersService.accepted_mm_offers(domain).then(function(d){
+		$scope.mmoffers = d.data.data;
+		$scope.mmnotification = d.data.data.length;
+	})
 	
+	ordersService.accepted_swap_offers(domain).then(function(d){
+		$scope.bidsswapnotification = d.data.data.length;
+		$scope.bidsaccepted = $scope.bidsspotnotification + $scope.bidsbuynotification + $scope.bidsforwardnotification + $scope.bidsswapnotification + $scope.mmnotification;
+	})
+ }
 	$scope.logout = function() {
 	    AuthService.logout();
 	    $window.open('login.html','_self');
@@ -14,25 +80,33 @@ app.controller('indexCtrl', function($scope,$window,AuthService,socketio){
 	 };
 });
 
-app.controller('bankCtrl', function($scope,$http,socketio,Notification){
+app.controller('bankCtrl', function($scope,$http,socketio,Notification,titleService){
 	var username = sessionStorage.getItem('username');
 	var domain = sessionStorage.getItem('bankdomain');
+
+	$scope.Title = titleService;
+	$scope.Title.name = "Open orders";
 	
-	console.log('--> logged in as '+ username + '::'+ domain);
+	//console.log('--> logged in as '+ username + '::'+ domain);
 	
 	socketio.on('ticket', function(msg){
 		openSpotorders();
-		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/home">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/home">Make an offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
 	});
 
 	socketio.on('new mm order', function(msg){
 		openMMorders();
-		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homemm">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homemm">Make an offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
 	});
 
 	socketio.on('new forward order', function(msg){
 		openForwardorders();
-		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homeforward">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/homeforward">Make an offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
+	});
+
+	socketio.on('new swap order', function(msg){
+		openSwaporders();
+		Notification.success({message: msg.buysell+' '+msg.ccypair+'<br><b>'+ msg.usernamefk+'</b><br><a href="#/home">Make an Offer</a>', title: 'MarginIQ',positionY: 'bottom', positionX: 'right', delay: null});
 	});
 	
 	$scope.orders = [];
@@ -47,6 +121,7 @@ app.controller('bankCtrl', function($scope,$http,socketio,Notification){
 	openSpotorders();
 	openMMorders();
 	openForwardorders();
+	openSwaporders();
 
 	function openSpotorders(){
 		$http({
@@ -83,12 +158,27 @@ app.controller('bankCtrl', function($scope,$http,socketio,Notification){
 		});
 	};
 
+	function openSwaporders(){
+		$http({
+		    url: '/get_bank_orders_swap/'+ domain, 
+		    method: "GET",
+		    headers: {'Content-Type': 'application/json'}
+		}).success(function(response){
+			//console.log(response.data);
+			$scope.orders_swap = response.data;
+			$scope.swapnotification = response.data.length;
+		});
+	};
+
 });
 
-app.controller('bankCtrlswap', function($scope,$http,socketio,Notification){
+/*app.controller('bankCtrlswap', function($scope,$http,socketio,Notification,titleService){
 
 	var username = sessionStorage.getItem('username');
 	var domain = sessionStorage.getItem('bankdomain');
+
+	$scope.Title = titleService;
+	$scope.Title.name = "swap orders";
 	
 	socketio.on('new swap order', function(msg){
 		openSwaporders();
@@ -111,7 +201,7 @@ app.controller('bankCtrlswap', function($scope,$http,socketio,Notification){
 			$scope.swapnotification = response.data.length;
 		});
 	};
-});
+});*/
 
 app.controller('newofferCtrl', function($scope,$stateParams,$http,$filter,$state, ordersService){
 	var username = window.sessionStorage.getItem('username');
@@ -210,9 +300,15 @@ app.controller('newofferCtrl', function($scope,$stateParams,$http,$filter,$state
 	
 });
 
-app.controller('offersCtrl', function($scope,ordersService,socketio){
+app.controller('offersCtrl', function($scope,ordersService,Data,socketio,titleService){
+	
+	$scope.Title = titleService;
+	$scope.Title.name = "offers made";
+
+
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
+
 	$scope.offers=[];
 	$scope.offersswap=[];
 	$scope.offersforward=[];
@@ -261,17 +357,24 @@ app.controller('offersCtrl', function($scope,ordersService,socketio){
 	
 });
 
-app.controller('acceptedoffersCtrl', function($scope,ordersService){
+app.controller('acceptedoffersCtrl', function($scope,ordersService,titleService){
 	$scope.offers = [];
 	$scope.buyoffers = [];
 	$scope.swapoffers = [];
 	$scope.forwardoffers = [];
+	$scope.mmoffers = [];
+
+	$scope.spotnotification = 0;
+	$scope.swapnotification = 0;
+
+	$scope.Title = titleService;
+	$scope.Title.name = "Bids accepted";
 
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
 	
 	ordersService.accepted_offers(username).then(function(d){
-		//console.log(d.data.data[0]);
+		$scope.spotnotification = d.data.data.length;
 		$scope.offers = d.data.data;
 	})
 	ordersService.accepted_buy_offers(username).then(function(d){
@@ -280,8 +383,13 @@ app.controller('acceptedoffersCtrl', function($scope,ordersService){
 	})
 
 	ordersService.accepted_forward_offers(username).then(function(d){
-		//console.log(d.data.data);
+		$scope.forwardnotification = d.data.data.length;
 		$scope.forwardoffers = d.data.data;
+	})
+	
+	ordersService.accepted_mm_offers(domain).then(function(d){
+		$scope.mmoffers = d.data.data;
+		$scope.mmnotification = d.data.data.length
 	})
 	
 	ordersService.accepted_swap_offers(domain).then(function(d){
@@ -359,15 +467,19 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,$state,
     	$scope.booking = d.data.data[0];
     	var freqnum = d.data.data[0].freqnum;
     	var freq = d.data.data[0].freq;
+    	
+    	console.log('moment date',$scope.booking.startdate);
+		
 
     	for(i=1;i<=freqnum;i++){
     		if(freq == "Monthly"){
     			$scope.schedules.push({
-    				settlementdate : $scope.booking.startdate+' month '+i
+    				settlementdate : moment($scope.booking.startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
     			});
+    			//console.log(moment($scope.booking.startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY"));
     		}else if(freq == "Weekly"){
     			$scope.schedules.push({
-	    			settlementdate : $scope.booking.startdate+' week '+i
+	    			settlementdate : moment($scope.booking.startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
 	    		});
     		}else{
     			$scope.schedules.push({
@@ -376,7 +488,7 @@ app.controller('bookdealforwardCtrl', function($scope,$stateParams,$http,$state,
     		}
     		
     	}
-    	console.log($scope.schedules);
+    	//console.log($scope.schedules);
 
     	if($scope.booking.buysellbank == 'SELL' && $scope.booking.buyorderamount>0){
     			$scope.lim = 3;
@@ -1126,9 +1238,10 @@ app.controller('editofferswapCtrl',function($scope,$stateParams,$http,$window,$f
 	}
 });
 
-app.controller('editforwardofferCtrl', function($scope){
+app.controller('editforwardofferCtrl', function($scope,$stateParams,$http,$filter,$state,$timeout,$window,ordersService){
 	$scope.showedit = false;
-
+	var offerid = $stateParams.offerid;
+	$scope.newforwardoffer = [];
 
 	$scope.btnEdit = function(){
 		$scope.showedit = true;
@@ -1138,25 +1251,83 @@ app.controller('editforwardofferCtrl', function($scope){
 		$scope.showedit = false;
 	}
 
+		ordersService.forwardoffer_bank(offerid).then(function(d) {
+			console.log(d.data.data[0])
+		    $scope.newforwardoffer = d.data.data[0];
+		});
+
+		$scope.fill = function(){
+		
+		if($scope.newforwardoffer.buysellbank == 'BUY' && $scope.newforwardoffer.buyorderamount > 0){
+			$scope.newforwardoffer.finalrate = parseFloat($scope.newforwardoffer.spot) + parseFloat($scope.newforwardoffer.magin/100);
+			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.buyorderamount/$scope.newforwardoffer.finalrate),2);
+			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,3);
+		}else if($scope.newforwardoffer.buysellbank == 'BUY' && $scope.newforwardoffer.sellorderamount > 0){
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.spot) - parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.sellorderamount*$scope.newforwardoffer.finalrate),2);
+			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,-3);
+
+		}else if($scope.newforwardoffer.buysellbank == 'SELL' && $scope.newforwardoffer.sellorderamount > 0){
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.spot) + parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.sellorderamount/$scope.newforwardoffer.finalrate),2);
+			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,3);
+		}else if($scope.newforwardoffer.buysellbank == 'SELL' && $scope.newforwardoffer.buyorderamount > 0){
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.spot) - parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.buyorderamount*$scope.newforwardoffer.finalrate),2);
+			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,-3);
+		}
+
+	};
+
+	$scope.updateforwardOffer =function(){
+		if ($window.confirm("This will update offer. Do you want to Proceed?")) {
+		$scope.dataLoading = true;
+				$http({
+		              method: 'post',
+		              url: '/update_forward_offer',
+		              headers: {'Content-Type': 'application/json'},
+		              data:{offerid:offerid,spot:$scope.newforwardoffer.spot,magin:$scope.newforwardoffer.magin,finalrate:$scope.newforwardoffer.finalrate,
+		              		settlementamountccy:$scope.newforwardoffer.settlementamountccy,settlementamount:$scope.newforwardoffer.settlementamount,bankcomment:$scope.newforwardoffer.bankcomment}
+		            }).success(function (data) {
+		            	$timeout(function(){
+		            		$scope.dataLoading = false;
+		            		alert("offer ammended");
+		            		$scope.dataLoading = false;
+		              		$scope.newforwardoffer = {};
+					  		$state.go('offersforward');
+		            	},300,true)
+		            }).error(function (error) {
+		                alert("Error when ammending offer");
+		                $scope.dataLoading = false;
+		                $scope.newforwardoffer = {};
+						$state.go('offersforward');
+		            });	
+		    } else {
+               $scope.dataLoading = false;
+            }
+		            
+	}
+
+
 	$scope.deleteOffer = function(orderindex){
 			if ($window.confirm("This will withdraw offer. Do you want to Proceed?")) {
 				$scope.dataLoading = true;
                		$http({
 		              method: 'post',
-		              url: '/delete_swap_offer',
+		              url: '/delete_forward_offer',
 		              headers: {'Content-Type': 'application/json'},
-		              data : {offerid:$scope.offerid}
+		              data : {offerid:offerid}
 		            }).success(function (data) {
 		              alert("Offer Withdrawn ");
 		              $scope.dataLoading = false;
-					  $state.go('offersswap');
+					  $state.go('offersforward');
 		            }).error(function () {
 		                alert("Error withdrawing Offer");
 		                $scope.dataLoading = false;
-						$state.go('offersswap');
+						$state.go('offersforward');
 		            });
 
-		            ordersService.updateorderreverse(orderindex).then(function(d){})
+		            ordersService.updateorderforwardreverse($scope.newforwardoffer.orderindex).then(function(d){})
 		            
             } else {
                $scope.dataLoading = false;

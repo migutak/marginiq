@@ -8,21 +8,23 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-8">
+                        <!--<div class="col-md-8">
                             <div class="chart">
-                                <!-- Sales Chart Canvas -->
                                 <div id="contchart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-                            </div><!-- /.chart-responsive -->
-                        </div>
-                        <div class="col-md-4">
+                            </div>
+                        </div>-->
+                        <div class="col-md-12">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Open Orders</h3><br>
-                                    <a href="#/home">Forex Spot <span class="label label-info">{{spotnotification}}</span></a> | <b>Forex Swap <span class="label label-info">{{swapnotification}}</span></b> | <a href="#/homeforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | <a href="#/homemm"> Money Market <span class="label label-info">{{mmnotification}}</span></a>
+                                    <h3 class="box-title">Open swap orders</h3><br>
+                                    <a href="#/home">Forex Spot <span class="label label-info">{{spotnotification}}</span></a> | 
+                                    <b>Forex Swap <span class="label label-info">{{swapnotification}}</span></b> | 
+                                    <a href="#/homeforward">Forex Forward <span class="label label-info">{{forwardnotification}}</span></a> | 
+                                    <a href="#/homemm"> Money Market <span class="label label-info">{{mmnotification}}</span></a>
                                     <div class="box-tools pull-right">
                                         <input ng-model="query" type="text" placeholder="Filter by" autofocus>
                                     </div>
-                                </div><!-- /.box-header -->
+                                </div>
                                 <div class="box-body" style="max-height: 300px;overflow-y: scroll;">
                                     <div class="cloading"></div>
 				                  <ul class="products-list product-list-in-box">
@@ -63,7 +65,7 @@
 	<!-- ChartJS 1.0.1 
     <script src="plugins/chartjs/Chart.min.js" type="text/javascript"></script>
     <script src="plugins/dist/js/pages/dashboard2.js" type="text/javascript"></script>-->
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
         $(function () {
           $('#contchart').highcharts({
               chart: {
@@ -103,4 +105,4 @@
               }]
           });
       });
-    </script>
+    </script>-->

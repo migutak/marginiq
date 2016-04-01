@@ -2,7 +2,8 @@ var app = angular.module('custCtrl', ['marginService'])
 
 app.controller('indexcustCtrl', function($scope,$window,AuthService){
 	$scope.username = window.sessionStorage.getItem("username");
-	
+	$scope.confimnotification = 0;
+	$scope.paymentsnotification = 0;
 	$scope.logout = function() {
 	    AuthService.logout()
 	    window.sessionStorage.clear()
@@ -415,11 +416,11 @@ app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$s
     	for(i=1;i<=freqnum;i++){
     		if(freq == "Monthly"){
     			$scope.schedules.push({
-    				settlementdate : $scope.booking.startdate+' month '+i
+    				settlementdate : moment($scope.booking.startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
     			});
     		}else if(freq == "Weekly"){
     			$scope.schedules.push({
-	    			settlementdate : $scope.booking.startdate+' week '+i
+	    			settlementdate : moment($scope.booking.startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
 	    		});
     		}else{
     			$scope.schedules.push({

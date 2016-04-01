@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ui.router','bankCtrl','marginService','ui-notification']);
+var app = angular.module('app', ['ui.router','bankCtrl','marginService','ui-notification','angularMoment']);
 
 app.constant('AUTH_EVENTS', {
   notAuthenticated: 'auth-not-authenticated'
@@ -30,7 +30,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	}).state('homeswap', {
 		url : "/homeswap",
 		templateUrl : "templates/home_bank_swap.html",
-		controller : 'bankCtrlswap'
+		controller : 'bankCtrl'
 	}).state('homeforward', {
 		url : "/homeforward",
 		templateUrl : "templates/home_bank_forward.html",
@@ -94,7 +94,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	}).state('acceptedoffermm', {
 		url : "/acceptedoffermm",
 		templateUrl : "templates/acceptoffermm.html",
-		controller : 'acceptedmmoffersCtrl'
+		controller : 'acceptedoffersCtrl' //changed from acceptedmmoffersCtrl
 	}).state('approvals', {
 		url : "/ofapprovalsfers",
 		templateUrl : "templates/approvals.html",
