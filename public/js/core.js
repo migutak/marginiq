@@ -6,7 +6,7 @@ app.constant('AUTH_EVENTS', {
 })
  
 app.constant('API_ENDPOINT', {
-  url: 'http://127.0.0.1:8000/api'
+  url: 'http://192.168.79.1:8000/api'
 });
 
 app.factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {

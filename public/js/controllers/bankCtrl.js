@@ -4,6 +4,8 @@ app.controller('indexCtrl', function($scope,$window,AuthService,Data,socketio,ti
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
 
+	$scope.username = window.sessionStorage.getItem('username');
+
 	$scope.acceptedoffersnotification = 0;
 	$scope.bidsaccepted = 0;
 

@@ -14,9 +14,9 @@
                 <li class="dropdown">
                   <a href="" class="dropdown-toggle" data-toggle="dropdown">Forward Payments <span class="caret"></span></a>
                   <ul class="dropdown-menu" role="menu">
-                    <li><a href="">Not Paid <span class="label label-success">{{}}</span></a></li>
-                    <li><a href="">Paid <span class="label label-success">{{}}</span></a></li>
-                    <li><a href="">View All <span class="label label-success">{{}}</span></a></li>
+                    <li><a href="" ng-click="archiveBtn_forward('ALL')">All <span class="label label-success">{{all_forward_notification}}</span></a></li>
+                    <li><a href="" ng-click="archiveBtn_forward('PAID')">Paid <span class="label label-success">{{paid_forward_notification}}</span></a></li>
+                    <li><a href="" ng-click="archiveBtn_forward('NOT PAID')">Not Paid <span class="label label-success">{{notpaid_forward_notification}}</span></a></li>
                   </ul>
                 </li>
             </ul>
@@ -50,12 +50,12 @@
                               <td>{{c.orderamountccy}} {{c.orderamount | number}}</td>
                               <td>{{c.freq}}</td>
                               <td>{{c.freqnum}}</td>
-                              <td><span class="label label-success">{{c.status}}</span></td>
+                              <td><span class="label label-success">{{c.confirm}}</span></td>
                               <td>{{c.startdate}}</td>
                               <td>
                                 <div class="action">
-                                    <button type="button" class="btn btn-primary btn-xs" title="Edit">
-                                        <span class="glyphicon glyphicon-pencil"></span> Pay
+                                    <button type="button" class="btn btn-primary btn-xs" ng-click="payforward(c.offerid)">
+                                        <span class="glyphicon glyphicon-ok"></span> Pay
                                     </button>
                                 </div>
                               </td>

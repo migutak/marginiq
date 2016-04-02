@@ -135,8 +135,8 @@
 	                    <img src="plugins/dist/img/default-50x50.gif" class="img-circle" alt="User Image" />
 	                </div>
 	                <div class="pull-left info">
-	                    <p>{{user}}</p>
-	                    <!--<a href="#"><i class="fa fa-circle text-success"></i> BANKNAME</a>-->
+	                    <p>{{username}}</p>
+	                    <a href="#"><i class="fa fa-circle text-success"></i> {{username}}</a>
 	                </div>
 	            </div>
 	
@@ -194,18 +194,7 @@
     	</div>
 	</div>
 	
-	<script src="plugins/dist/js/app.min.js" type="text/javascript"></script>       
-  
-	<script>
-      var socket = io();
-      function testClick(){
-        socket.emit('chat message', 'Test');
-        //return false;
-      };     
-      socket.on('chat message', function(msg){
-        console.log('Server Message');
-      });
-    </script>
+	<script src="plugins/dist/js/app.js" type="text/javascript"></script>       
 </body>
 
 </html>

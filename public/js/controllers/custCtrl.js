@@ -723,7 +723,7 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	
 });
 
-app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
+app.controller('custpaymentsCtrl', function($scope,$window,$http,ordersService,socketio){
 	$scope.payments_spot = [];
 	$scope.payments_swap = [];
 	$scope.payments_forward = [];
@@ -734,10 +734,38 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
     $scope.payments_swap_notification = 0;
     $scope.payments_mm_notification = 0;
 
+    $scope.all_swap_notification = 0;
+    $scope.paid_swap_notification = 0;
+    $scope.notpaid_swap_notification = 0;
+
+    $scope.all_spot_notification = 0;
+    $scope.paid_spot_notification = 0;
+    $scope.notpaid_spot_notification = 0;
+
+    $scope.all_mm_notification = 0;
+    $scope.paid_mm_notification = 0;
+    $scope.notpaid_mm_notification = 0;
+
+    $scope.all_forward_notification = 0;
+    $scope.paid_forward_notification = 0;
+    $scope.notpaid_forward_notification = 0;
+
     payments_forward();
     payments_spot();
     payments_mm();
     payments_swap();
+
+    payments_swap_all();
+    payments_swap_paid();
+
+    payments_forward_all();
+    payments_forward_paid();
+
+    payments_spot_all();
+    payments_spot_paid();
+
+    payments_mm_all();
+    payments_mm_paid();
 
     socketio.on('payments_forward', function(msg){
         payments_forward();
@@ -752,11 +780,41 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	    ordersService.payments_forward().then(function(d){
 	        $scope.confirmedforwardoffers = d.data.data
 	        $scope.payments_forward_notification = d.data.data.length;
+	        $scope.notpaid_forward_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_forward_all(){
+	    ordersService.payments_forward_all().then(function(d){
+	        $scope.confirmedforwardoffers = d.data.data
+	        $scope.all_forward_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_forward_paid(){
+	    ordersService.payments_forward_paid().then(function(d){
+	        $scope.confirmedforwardoffers = d.data.data
+	        $scope.paid_forward_notification = d.data.data.length;
 	    }) 
 	}
 
 	function payments_spot(){
 	    ordersService.confirmed_offers().then(function(d){
+	    	//console.log(d.data.data);
+	        $scope.payments_spot = d.data.data
+	        $scope.payments_spot_notification = d.data.data.length;
+	    }) 
+	}
+	function payments_spot_all(){
+	    ordersService.confirmed_offers_all().then(function(d){
+	    	//console.log(d.data.data);
+	        $scope.payments_spot = d.data.data
+	        $scope.payments_spot_notification = d.data.data.length;
+	    }) 
+	}
+	function payments_spot_paid(){
+	    ordersService.confirmed_offers_paid().then(function(d){
+	    	//console.log(d.data.data);
 	        $scope.payments_spot = d.data.data
 	        $scope.payments_spot_notification = d.data.data.length;
 	    }) 
@@ -766,34 +824,158 @@ app.controller('custpaymentsCtrl', function($scope,ordersService,socketio){
 	    ordersService.payments_mm_confirm().then(function(d){
 	        $scope.custmmpay = d.data.data
 	        $scope.payments_mm_notification = d.data.data.length;
+    		$scope.notpaid_mm_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_mm_all(){
+	    ordersService.payments_mm_confirm_all().then(function(d){
+	        $scope.custmmpay = d.data.data
+	       	$scope.all_mm_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_mm_paid(){
+	    ordersService.payments_mm_confirm_paid().then(function(d){
+	        $scope.custmmpay = d.data.data
+	        $scope.paid_mm_notification = d.data.data.length;
 	    }) 
 	}
 
 	function payments_swap(){
 	    ordersService.payments_swap_confirm().then(function(d){
-	    	console.log(d.data.data);
+	    	//console.log(d.data.data);
 	        $scope.payments_swap = d.data.data
-	        $scope.payments_swap_notification = d.data.data.length;
+    		$scope.notpaid_swap_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_swap_all(){
+	    ordersService.payments_swap_confirm_all().then(function(d){
+	    	//console.log(d.data.data);
+	        $scope.payments_swap = d.data.data
+	        $scope.all_swap_notification = d.data.data.length;
+	    }) 
+	}
+
+	function payments_swap_paid(){
+	    ordersService.payments_swap_confirm_paid().then(function(d){
+	    	//console.log(d.data.data);
+	        $scope.payments_swap = d.data.data
+	        $scope.paid_swap_notification = d.data.data.length;
 	    }) 
 	}
     
-    $scope.pay = function(idx){
-    	var deleteUser = $window.confirm('Are you sure you want to confirm payment?');
-	    if(deleteUser){
+    $scope.paymm = function(offerid){
+    	var mm = $window.confirm('Are you sure you want to confirm payment?');
+	    if(mm){
 	     	$http({
 			   method: 'POST',
-			   url: '/pay_mm_deal',
+			   url: '/payment_mm_cust',
 			   headers: {'Content-Type': 'application/json'},
-			   data : {id:idx}
+			   data : {offerid:offerid}
 			}).success(function (data) {
-			    alert('MM Payment Confirmed. Thank You');
-				ordersService.payments_mm_confirm().then(function(d){
-			    	$scope.custmmpay = d.data
-			    })
+			    alert('Money market payment confirmed. Thank You');
+				payments_mm();
 			}).error(function (error) {
-			    alert("Error making MM payment");
+			    alert("Error making money market payment " + error);
 			});	
 	    }
+    }
+
+    $scope.payspot = function(offerid){
+    	var spot = $window.confirm('Are you sure you want to confirm payment?');
+	    if(spot){
+	     	$http({
+			   method: 'POST',
+			   url: '/payment_spot_cust',
+			   headers: {'Content-Type': 'application/json'},
+			   data : {offerid:offerid}
+			}).success(function (data) {
+			    alert('Spot payment confirmed. Thank You');
+				payments_spot();
+			}).error(function (error) {
+			    alert("Error making spot payment" + error);
+			});	
+	    }
+    }
+
+    $scope.payswap = function(offerid){
+    	var swap = $window.confirm('Are you sure you want to confirm payment ?');
+	    if(swap){
+	     	$http({
+			   method: 'POST',
+			   url: '/payment_swap_cust',
+			   headers: {'Content-Type': 'application/json'},
+			   data : {offerid:offerid}
+			}).success(function (data) {
+			    alert('Swap payment confirmed. Thank You');
+				payments_swap();
+			}).error(function (error) {
+			    alert("Error making spot payment" + error);
+			});	
+	    }
+    }
+
+    $scope.payforward = function(offerid){
+    	var forward = $window.confirm('Are you sure you want to confirm payment ?');
+	    if(forward){
+	     	$http({
+			   method: 'POST',
+			   url: '/payment_forward_cust',
+			   headers: {'Content-Type': 'application/json'},
+			   data : {offerid:offerid}
+			}).success(function (data) {
+			    alert('Forward payment confirmed. Thank You');
+				payments_forward();
+			}).error(function (error) {
+			    alert("Error making forward payment" + error);
+			});	
+	    }
+    }
+
+    $scope.archiveBtn_spot = function(input){
+    	console.log('archiveBtn_spot ... ', input);
+    	if(input == 'ALL'){
+    		payments_spot_all();
+    	}else if(input == 'PAID'){
+    		payments_spot_paid();
+    	}else{
+    		payments_spot();
+    	}
+    }
+
+    $scope.archiveBtn_swap = function(input){
+    	console.log('archiveBtn_swap ... ', input);
+    	if(input == 'ALL'){
+    		payments_swap_all();
+    	}else if(input == 'PAID'){
+    		payments_swap_paid();
+    	}else{
+    		payments_swap();
+    	}
+    }
+
+    $scope.archiveBtn_forward = function(input){
+    	console.log('archiveBtn_forward ... ', input);
+    	if(input == 'ALL'){
+    		payments_forward_all();
+    	}else if(input == 'PAID'){
+    		payments_forward_paid();
+    	}else{
+    		payments_forward();
+    	}
+    }
+
+    $scope.archiveBtn_mm = function(input){
+    	console.log('archiveBtn_mm ... ', input);
+    	if(input == 'ALL'){
+    		payments_mm_all();
+    	}else if(input == 'PAID'){
+    		payments_mm_paid();
+    	}else{
+    		payments_mm();
+    	}
     }
 });
 
@@ -805,34 +987,28 @@ app.controller('sheduleCtrl', function($scope, $stateParams){
 
 	$scope.schedules = [];
 
-	if(freq == 'Weekly'){
-		addx = 7;
-	}else{
-		addx = 30;
-	}
-
-		$scope.formatString = function(startdate) {
-		    var day   = parseInt(startdate.substring(0,2));
-		    var month  = parseInt(startdate.substring(3,5));
-		    var year   = parseInt(startdate.substring(6,10));
-		    var date = new Date(year, month-1, day);
-		    return date;
-		}
-		var date1 = new Date($scope.formatString(startdate));
-		console.log(date1);
-		console.log(date1.setMonth(12));
-		var d = new Date();
-		console.log(d.setMonth(d.getMonth(), 0));
 
 	for(i=1; i<=nofreq;i++){
-		$scope.schedules.push(
-			{'frequency':freq +' '+i,
-			'buyamount':buyorderamount,
-			'startdate':startdate}
-			);
+		if (freq == 'Monthly'){;
+			$scope.schedules.push(
+				{'frequency':freq +' #'+i,
+				'buyamount':buyorderamount,
+				'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
+			});
+		}else if(freq == 'Weekly'){
+			$scope.schedules.push(
+				{'frequency':freq +' #'+i,
+				'buyamount':buyorderamount,
+				'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
+			});
+		}else{
+			$scope.schedules.push(
+				{'frequency':freq +' #'+i,
+				'buyamount':buyorderamount,
+				'startdate':startdate
+			});
+		}
 	}
-
-	//console.log($scope.schedules);
 })
 
 app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$timeout,ordersService){

@@ -415,6 +415,33 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
+				    confirmed_offers_all: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_offers_all',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    confirmed_offers_paid: function() {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_offers_paid',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
 				    confirmed_forward_bo: function() {
 				      var promise = $http({
 				      		method:'GET',
@@ -751,16 +778,39 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
-				    payments_forward: function(x) {
+				    payments_forward: function() {
 				      var promise = $http({
 				      		method:'GET',
 				      		url:'/confirmed_forward_bo',
-				      		headers: {'Content-Type': 'application/json'},
-				      		params:{id:x}
+				      		headers: {'Content-Type': 'application/json'}
 				      }).success(function (response) {
-				        		return response;
+				        	return response;
 				      }).error(function(error){
-				      			console.log("Error: "+error);
+				      		console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    payments_forward_all: function() {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_forward_bo_all',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				        	return response;
+				      }).error(function(error){
+				      		console.log("Error: "+error);
+				      });
+				      return promise;
+				    },
+				    payments_forward_paid: function() {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/confirmed_forward_bo_paid',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				        	return response;
+				      }).error(function(error){
+				      		console.log("Error: "+error);
 				      });
 				      return promise;
 				    },
@@ -874,10 +924,65 @@ app.factory('ordersService', function($http){
 				      });
 				      return promise;
 				    },
+				    payments_mm_confirm_paid: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_mm_confirm_paid',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    payments_mm_confirm_all: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_mm_confirm_all',
+				      		headers: {'Content-Type': 'application/json'}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
 				    payments_swap_confirm: function(x) {
 				      var promise = $http({
 				      		method:'GET',
 				      		url:'/payments_swap_confirm',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    payments_swap_confirm_all: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_swap_confirm_all',
+				      		headers: {'Content-Type': 'application/json'},
+				      		params:	 {id:x}
+				      }).success(function (response) {
+				      		//console.log(response);
+				        	return response;
+				      }).error(function(error){
+				      		alert("Error: "+ error);
+				      });
+				      return promise;
+				    },
+				    payments_swap_confirm_paid: function(x) {
+				      var promise = $http({
+				      		method:'GET',
+				      		url:'/payments_swap_confirm_paid',
 				      		headers: {'Content-Type': 'application/json'},
 				      		params:	 {id:x}
 				      }).success(function (response) {
