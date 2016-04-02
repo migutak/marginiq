@@ -27,8 +27,8 @@
                                 <tbody>
                                 <tr ng-repeat="ord in custorders_forward | filter: searchKeyword">
                                     <td>
-                                        <button class="btn btn-info" ng-click="viewforwardoffers(ord.orderid)"><i class="fa fa-external-link"></i> <span class="badge">{{ord.nOffers}}</span></button>
-                                        <button class="btn btn-danger" ><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-xs btn-info" ng-click="viewforwardoffers(ord.orderid)"><i class="fa fa-external-link"></i> <span class="badge">{{ord.nOffers}}</span></button>
+                                        <button class="btn btn-xs btn-danger" ><i class="fa fa-trash"></i></button>
                                     </td>
                                     <td>{{ord.ccypair}}</td>
                                     <td>{{ord.freq}}</td>

@@ -69,14 +69,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/profile",
 		templateUrl : "templates/profile_cust.html",
 		controller : 'profileCtrl'
-	}).state('report1', {
-		url : "/report1",
-		templateUrl : "templates/report1.html",
-		controller : 'profileCtrl'
-	}).state('report2', {
-		url : "/report2",
-		templateUrl : "templates/report2.html",
-		controller : 'profileCtrl'
+	}).state('rptorders', {
+		url : "/rptorders",
+		templateUrl : "templates/rptorders.html",
+		controller : 'reportCtrl'
+	}).state('rptconfirmations', {
+		url : "/rptconfirmations",
+		templateUrl : "templates/rptconfirmations.html",
+		controller : 'reportCtrl'
+	}).state('rptexceptions', {
+		url : "/rptexceptions",
+		templateUrl : "templates/rptexceptions.html",
+		controller : 'reportCtrl'
+	}).state('rptpayments', {
+		url : "/rptpayments",
+		templateUrl : "templates/rptpayments.html",
+		controller : 'reportCtrl'
 	}).state('custconfirmations', {
 		url : "/custconfirmations",
 		templateUrl : "templates/custconfirmations.html",

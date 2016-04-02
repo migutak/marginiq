@@ -24,8 +24,8 @@
                                 <tbody>
                                 <tr ng-repeat="ord in custorders_mm | filter: searchKeyword">
                                     <td>
-                                        <button class="btn btn-info" ng-click="viewmmoffers(ord.orderid)"><i class="fa fa-external-link"></i> <span class="badge">{{ord.nOffers}}</span></button>
-                                        <button class="btn btn-danger" ><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-xs btn-info" ng-click="viewmmoffers(ord.orderid)"><i class="fa fa-external-link"></i> <span class="badge">{{ord.nOffers}}</span></button>
+                                        <button class="btn btn-xs btn-danger" ><i class="fa fa-trash"></i></button>
                                     </td>
                                     <td>{{ord.mmtype}}</td>
                                     <td>{{ord.ccy}}</td>
