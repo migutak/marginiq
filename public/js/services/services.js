@@ -603,10 +603,10 @@ app.factory('ordersService', function($http){
 				      		});
 				      return promise;
 				    },
-				    getmybanks: function() {
+				    getmybanks: function(custid) {
 				      var promise = $http({
 				      		method:'GET',
-				      		url:'/mybanks/customer1',
+				      		url:'/mybanks/'+custid,
 				      		headers: {'Content-Type': 'application/json'}
 				      }).success(function (response) {
 				        		return response;

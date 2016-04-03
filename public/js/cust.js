@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ui.router','custCtrl','marginService','angularMoment']);
+var app = angular.module('app', ['ui.router','custCtrl','marginService','angularMoment','firebase']);
 
 app.constant('AUTH_EVENTS', {
   notAuthenticated: 'auth-not-authenticated'
@@ -83,7 +83,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		controller : 'reportCtrl'
 	}).state('rptpayments', {
 		url : "/rptpayments",
-		templateUrl : "templates/rptpayments.html",
+		templateUrl : "templates/rptpaymentscust.html",
 		controller : 'reportCtrl'
 	}).state('custconfirmations', {
 		url : "/custconfirmations",

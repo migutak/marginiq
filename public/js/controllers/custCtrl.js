@@ -203,7 +203,7 @@ app.controller('forwardofferacceptCtrl', function($scope,$stateParams,$state,$ht
 
 app.controller('neworderCtrl', function($scope,$http, $filter, $state, ordersService){
 	var username = window.sessionStorage.getItem('username');
-	var domain = window.sessionStorage.getItem('custdomain');
+	var domain = window.sessionStorage.getItem('bankdomain');
 
 	$scope.neworder = {};
 	$scope.ccytitle = '';
@@ -278,7 +278,6 @@ app.controller('neworderCtrl', function($scope,$http, $filter, $state, ordersSer
 	            
 	$scope.$watch("neworder.ccypair", function (newval) {
 	    $scope.ccytitle = newval;
-	    //ccytitle insert into currencies values ('limitTo:num
 	    $scope.neworder.ccybuyorderamount = $filter('limitTo')(newval,$scope.num);
 	    $scope.neworder.ccysellorderamount = $filter('limitTo')(newval,-$scope.num)
 	}, true);
@@ -286,7 +285,7 @@ app.controller('neworderCtrl', function($scope,$http, $filter, $state, ordersSer
 				$scope.$watch("neworder.mybanks", function(newval) {
 				    if(newval){
 				    	$scope.neworder.bank={};
-				    	ordersService.getmybanks().then(function(d){
+				    	ordersService.getmybanks(domain).then(function(d){
 							$scope.banks = d.data.data;
 						})
 				    }else{
@@ -507,7 +506,8 @@ app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$s
 
 app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,Data,ordersService){
 	var username = window.sessionStorage.getItem('username');
-	console.log('newswaporderCtrl '+username);
+	var domain = window.sessionStorage.getItem('bankdomain');
+
 	$scope.newswaporder = {};
 	$scope.ccytitle = {};
 	$scope.banks = [];
@@ -517,6 +517,20 @@ app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,Data,ord
 	
 	ordersService.getbanks().then(function(d){
 		$scope.banks = d.data.data;
+	})
+
+	$scope.$watch("newswaporder.mybanks", function(newval) {
+	    if(newval){
+	    	$scope.banks=[];
+	    	ordersService.getmybanks(domain).then(function(d){
+				$scope.banks = d.data.data;
+			})   	
+	    }else{
+	    	$scope.bank=[]
+	    	ordersService.getbanks().then(function(d){
+				$scope.banks = d.data.data;
+			})
+	    };
 	})
 	
 				$scope.setfunct = function(){
@@ -598,7 +612,7 @@ app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,Data,ord
 
 app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$interval,$timeout, ordersService, Data) {
     var username = window.sessionStorage.getItem('username');
-    var domain = window.sessionStorage.getItem('custdomain');
+    var domain = window.sessionStorage.getItem('bankdomain');
     //var custname = window.sessionStorage.getItem('custname');
    
     
@@ -629,7 +643,7 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 	$scope.$watch("newmmorder.mybanks", function(newval) {
 	    if(newval){
 	    	$scope.newmmorder.bank={};
-	    	ordersService.getmybanks().then(function(d){
+	    	ordersService.getmybanks(domain).then(function(d){
 				$scope.banks = d.data.data;
 			})   	
 	    }else{
@@ -1013,7 +1027,7 @@ app.controller('sheduleCtrl', function($scope, $stateParams){
 
 app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$timeout,ordersService){
 	var username = window.sessionStorage.getItem('username');
-	console.log('username ::: ',username);
+	var domain = window.sessionStorage.getItem('bankdomain');
 	$scope.newforwardorder = [];
 	$scope.ccytitle = {};
 	$scope.banks = [];
@@ -1113,7 +1127,7 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 	            $scope.$watch("newforwardorder.mybanks", function(newval) {
 				    if(newval){
 				    	$scope.newforwardorder.bank={};
-				    	ordersService.getmybanks().then(function(d){
+				    	ordersService.getmybanks(domain).then(function(d){
 							$scope.banks = d.data.data;
 						})
 				    }else{
@@ -1348,3 +1362,40 @@ app.controller('offersCtrl', function($scope,ordersService){
 	
 });
 
+app.controller('reportCtrl', function($scope){
+	
+})
+
+app.controller('profileCtrl', function($scope,$http,$state,ordersService){
+	var username = window.sessionStorage.getItem('username');
+	var domain = window.sessionStorage.getItem('bankdomain');
+	$scope.banklist = [];
+
+	$scope.newbank = {};
+
+	ordersService.getmybanks(domain).then(function(d){
+		$scope.banklist = d.data.data;
+		console.log('for daimen' ,d.data.data);
+	})
+	
+	$scope.name = username;
+	
+	$scope.savebank = function(){
+		$scope.dataLoading = true;
+		$http({
+			method:'post',
+			url:'/addmybank',
+			headers: {'Content-Type': 'application/json'},
+			data:{domain:domain,bankid:$scope.newbank.bankid,bankname:$scope.newbank.name}
+		}).success(function(response){
+			alert($scope.newbank.name + ' added to your Profile');
+			$scope.newbank = {};
+			$scope.dataLoading = false;
+			$state.go('profile');
+		}).error(function(error){
+			$scope.dataLoading = false;
+			console.log("Error: " + error);
+		});
+		
+	}
+})

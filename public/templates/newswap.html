@@ -107,11 +107,12 @@
 				    </div>
 				    <div class="form-group">
 				    	<label class="col-xs-3 control-label">Select Bank(s)</label>
-				    	<div class="col-xs-5 selectContainer">
+				    	<div class="col-xs-4 selectContainer">
 						    <select class="form-control select2" multiple="multiple" data-placeholder="Select Bank(s)" ng-model="newswaporder.bank">
 		                      <option ng-repeat="option in banks" value="{{option.bankid}}">{{option.bankname}}</option>
 		                    </select>
 				    	</div>
+				    	<div class="col-xs-3 selectContainer"><input type="checkbox" ng-model="newswaporder.mybanks" name="mybanks" /><span class="text"> Only my Banks</span></div>
 				    </div>
 				    
                     <div class="form-group">
