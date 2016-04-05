@@ -10,7 +10,9 @@
     <!-- Theme style -->
     <link href="plugins/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <link href="plugins/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
-    
+
+    <link href="bower_components/ng-material-floating-button/mfb/dist/mfb.css" rel="stylesheet"/>
+
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
@@ -22,7 +24,7 @@
 	  <script src="bower_components/angular/angular.js"></script>
 	  <link href="bower_components/angular-busy/dist/angular-busy.css" rel="stylesheet">
 	  
-	  <link href="stylesheets/fab.css" rel="stylesheet">
+	  <!--<link href="stylesheets/fab.css" rel="stylesheet">-->
   
     <script src="bower_components/angular-busy/dist/angular-busy.js"></script>
   
@@ -44,6 +46,8 @@
 
    <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/angular-moment/angular-moment.js"></script>
+
+    <script type="text/javascript" src="bower_components/ng-material-floating-button/src/mfb-directive.js"></script>
 	
 	<script src="/socket.io/socket.io.js"></script>
 	
@@ -185,11 +189,11 @@
 	        <section class="content-header">
 	            <h1>
 	                CUSTOMER
-	                <small>{{Data.pagetitle}}</small>
+	                <small>{{Title.name}}</small>
 	            </h1>
 	            <ol class="breadcrumb">
 	                <li><a href="/home"><i class="fa fa-dashboard"></i> Home</a></li>
-	                <li class="active">{{Data.pagetitle}}</li>
+	                <li class="active">{{Title.name}}</li>
 	            </ol>
 	        </section>
 	        

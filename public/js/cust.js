@@ -1,11 +1,11 @@
-var app = angular.module('app', ['ui.router','custCtrl','marginService','angularMoment','firebase']);
+var app = angular.module('app', ['ui.router','custCtrl','marginService','angularMoment','ng-mfb']);
 
 app.constant('AUTH_EVENTS', {
   notAuthenticated: 'auth-not-authenticated'
 })
  
 app.constant('API_ENDPOINT', {
-  url: 'http://192.168.79.1:8000/api'
+  url: 'http://localhost:8000/api'
 });
 
 app.run(function ($rootScope, $window, AuthService, AUTH_EVENTS) {
@@ -106,7 +106,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		templateUrl : "templates/acceptDetails.html",
 		controller : 'acceptsdetailsCtrl'
 	}).state('forwardschedule', {
-		url : "/forwardschedule/:freq/:nofreq/:startdate/:buyorderamount",
+		url : "/forwardschedule/:freq/:nofreq/:startdate/:buyorderamountccy/:buyorderamount/:sellorderamountccy/:sellorderamount",
 		templateUrl : "templates/forwardschedule.html",
 		controller : 'sheduleCtrl'
 	}).state('neworder', {

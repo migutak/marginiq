@@ -72,21 +72,21 @@
                 <div class="col-md-2" style="border: 1px solid blue">Pay/Rec</div>
                 <div class="col-md-2" style="border: 1px solid blue">Amount</div>
                 <div class="col-md-2" style="border: 1px solid blue">Currency</div>
-                <div class="col-md-2" style="border: 1px solid blue">Receiver</div>
+                <!--<div class="col-md-2" style="border: 1px solid blue">Receiver</div>-->
             </div>
             <div class="row" ng-repeat="schedule in schedules">
                 <div class="col-md-2" style="border: 1px solid blue">{{schedule.settlementdate}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.pay}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.recamount}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.ccypair | limitTo:lim}}</div>
-                <div class="col-md-2" style="border: 1px solid blue">COMMERZBANK FRA</div>
+                <!--<div class="col-md-2" style="border: 1px solid blue">COMMERZBANK FRA</div>-->
             </div>
             <div class="row" ng-repeat="schedule in schedules">
                 <div class="col-md-2" style="border: 1px solid blue">{{schedule.settlementdate}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.rec}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.payamount}}</div>
                 <div class="col-md-2" style="border: 1px solid blue">{{booking.ccypair | limitTo:-lim}}</div>
-                <div class="col-md-2" style="border: 1px solid blue">ALL/ABCD/ANY/</div>
+                <!--<div class="col-md-2" style="border: 1px solid blue">ALL/ABCD/ANY/</div>-->
             </div>
         	<div>
                 <br>

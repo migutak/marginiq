@@ -1,9 +1,13 @@
 var app = angular.module('custCtrl', ['marginService'])
 
-app.controller('indexcustCtrl', function($scope,$window,AuthService){
+app.controller('indexcustCtrl', function($scope,$window,AuthService,titleService){
 	$scope.username = window.sessionStorage.getItem("username");
 	$scope.confimnotification = 0;
 	$scope.paymentsnotification = 0;
+
+	$scope.Title = titleService;
+	$scope.Title.name = "open orders";
+
 	$scope.logout = function() {
 	    AuthService.logout()
 	    window.sessionStorage.clear()
@@ -11,11 +15,14 @@ app.controller('indexcustCtrl', function($scope,$window,AuthService){
 	};
 })
 
-app.controller('custCtrl', function($scope,$http,ordersService,socketio){
+app.controller('custCtrl', function($scope,$http,$timeout,ordersService,titleService,socketio){
 	$scope.username = window.sessionStorage.getItem("username")
 	$scope.spotorders = [];
 	$scope.custorders_mm = [];
 	$scope.custorders_forward = [];
+
+	$scope.Title = titleService;
+	$scope.Title.name = "open orders";
 
 	spoto();
 	mmorders();
@@ -66,35 +73,51 @@ app.controller('custCtrl', function($scope,$http,ordersService,socketio){
 	}
 	
 	$scope.viewoffers = function(orderid){
-		ordersService.offer(orderid).then(function(d) {
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
-		});
+		$(".modalbusy").show();
+		$scope.orderdetails = [];
+		$scope.offertitle = '';
+		$timeout(function() {
+			ordersService.offer(orderid).then(function(d) {
+			    $scope.orderdetails = d.data.data;
+			    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
+			});
+			$(".modalbusy").hide();
+		}, 2000);	
 	};
 
 	$scope.viewforwardoffers = function(orderid){
+		$(".modalbusy").show();
 		$scope.orderdetails = [];
 		$scope.offertitle = '';
-		ordersService.forwardoffer(orderid).then(function(d) {
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
-		});
+		$timeout(function() {
+			ordersService.forwardoffer(orderid).then(function(d) {
+			    $scope.orderdetails = d.data.data;
+			    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
+			});
+			$(".modalbusy").hide();
+		}, 2000);	
 	};
 
 	$scope.viewmmoffers = function(orderid){
+		$(".modalbusy").show();
 		$scope.orderdetails = [];
 		$scope.offertitle = '';
-		ordersService.offer_s_mm(orderid).then(function(d) {
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal Number: ' + d.data.data[0].orderidfk;
-		});
+		$timeout(function() {
+			ordersService.offer_s_mm(orderid).then(function(d) {
+			    $scope.orderdetails = d.data.data;
+			    $scope.offertitle = 'for Deal Number: ' + d.data.data[0].orderidfk;
+			});
+			$(".modalbusy").hide();
+		}, 2000);	
 	};
 	
 })
 
-app.controller('custCtrlswap', function($scope,$http,ordersService,socketio){
+app.controller('custCtrlswap', function($scope,$http,$timeout,ordersService,titleService,socketio){
 	$scope.username = window.sessionStorage.getItem("username")
 	
+	$scope.Title = titleService;
+	$scope.Title.name = "swap orders";
 
 	$scope.custorders_swap = [];
 	
@@ -115,21 +138,18 @@ app.controller('custCtrlswap', function($scope,$http,ordersService,socketio){
 			$scope.custorders_swap = response.data;
 		});
 	}
-	
-	$scope.viewoffers = function(orderid){
-		ordersService.offer(orderid).then(function(d) {
-		  	console.log(d.data.data[0]);
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal Number: '+d.data.data[0].orderidfk;
-		});
-	};
 
 	$scope.viewswapoffers = function(orderid){
-		ordersService.offer_s_swap(orderid).then(function(d) {
-		  	//console.log(d.data);
-		    $scope.orderdetails = d.data.data;
-		    $scope.offertitle = 'for Deal ID: '+d.data.data[0].orderidfk;
-		});
+		$(".modalbusy").show();
+		$scope.orderdetails = [];
+		$scope.offertitle = '';
+		$timeout(function() {
+			ordersService.offer_s_swap(orderid).then(function(d) {
+			    $scope.orderdetails = d.data.data;
+			    $scope.offertitle = 'for Deal ID: '+d.data.data[0].orderidfk;
+			});
+			$(".modalbusy").hide();
+		}, 2000);
 	};
 	
 })
@@ -404,6 +424,8 @@ app.controller('confirmofferforwardCtrl', function($scope, $stateParams,$http,$s
     $scope.showAccept = false;
     $scope.showReject = false;
     $scope.schedules = [];
+
+    
     
     ordersService.forwardofferdetails(offerid).then(function(d){
     	//console.log(d.data.data[0]);
@@ -607,6 +629,13 @@ app.controller('newswaporderCtrl', function($state,$scope,$http,$filter,Data,ord
 	               		$scope.newswaporder.farbuyorderamountccy = $filter('limitTo')($scope.newswaporder.ccypair,3);
 	               };
 	            }, true);
+
+				$scope.$watch("newswaporder.nearandfardate", function(newval){
+					if(newval != undefined){
+						$scope.newswaporder.neardate = newval.substring(0,10);
+						$scope.newswaporder.fardate = newval.substring(13,23);
+					}
+				}, true);
 	
 })
 
@@ -734,6 +763,13 @@ app.controller('newmmorderCtrl', function($scope, $stateParams,$state,$http,$int
 		            
 				}
 	}
+
+	$scope.$watch("newmmorder.duration", function(newval){
+		if(newval != undefined){
+			$scope.newmmorder.mmfrom = newval.substring(0,10);
+			$scope.newmmorder.mmto = newval.substring(13,23);
+		}
+	}, true);
 	
 });
 
@@ -993,51 +1029,103 @@ app.controller('custpaymentsCtrl', function($scope,$window,$http,ordersService,s
     }
 });
 
-app.controller('sheduleCtrl', function($scope, $stateParams){
+app.controller('sheduleCtrl', function($scope, $stateParams,titleService){
 	var freq = $stateParams.freq;
 	var nofreq = $stateParams.nofreq;
 	var startdate = $stateParams.startdate;
 	var buyorderamount = $stateParams.buyorderamount;
+	var buyorderamountccy = $stateParams.buyorderamountccy;
+	var sellorderamount = $stateParams.sellorderamount;
+	var sellorderamountccy = $stateParams.sellorderamountccy;
+
+	$scope.Title = titleService;
+	$scope.Title.name = "forward schedule";
 
 	$scope.schedules = [];
 
 
 	for(i=1; i<=nofreq;i++){
-		if (freq == 'Monthly'){;
-			$scope.schedules.push(
-				{'frequency':freq +' #'+i,
-				'buyamount':buyorderamount,
-				'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
-			});
-		}else if(freq == 'Weekly'){
-			$scope.schedules.push(
-				{'frequency':freq +' #'+i,
-				'buyamount':buyorderamount,
-				'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
-			});
+		if(buyorderamount>0){
+			if (freq == 'Monthly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
+				});
+			}else if(freq == 'Weekly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
+				});
+			}else{
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':startdate
+				});
+			}
 		}else{
-			$scope.schedules.push(
-				{'frequency':freq +' #'+i,
-				'buyamount':buyorderamount,
-				'startdate':startdate
-			});
+			if (freq == 'Monthly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
+				});
+			}else if(freq == 'Weekly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
+				});
+			}else{
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':startdate
+				});
+			}
 		}
+		
 	}
 })
 
-app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$timeout,ordersService){
+app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$timeout,ordersService,titleService,tempData){
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
-	$scope.newforwardorder = [];
+	//$scope.newforwardorder = [];
 	$scope.ccytitle = {};
 	$scope.banks = [];
 	
-	//$scope.Data = Data;
-	//$scope.Data.pagetitle = 'New FxForward Order';
+	$scope.Title = titleService;
+	$scope.Title.name = "new forward order";
+
+	console.log('tempData.newforward ',tempData.newforward);
+	$scope.newforwardorder = tempData.newforward;
+	//clear tempdata
+	tempData.newforward = '';
+	console.log('tempData cleared ',tempData.newforward);
 	
 	ordersService.getbanks().then(function(d){
 		$scope.banks = d.data.data;
 	})
+
+	$scope.Test = function(){
+		console.log('Testing ....' , $scope.newforwardorder);
+		tempData.newforward = $scope.newforwardorder;
+	}
 	
 	
 	$scope.saveforwardorder = function(){
@@ -1046,6 +1134,11 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 		var i = $scope.newforwardorder.bank.length;
 		var freq = $scope.newforwardorder.frequency;
 		var nofreq = $scope.newforwardorder.nofrequency;
+
+		if(i == 0){
+			alert('Select one or more Banks');
+			return;
+		};
 		
 		var d = new Date();
 		var n = d.getTime();
@@ -1079,35 +1172,41 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 		              	//console.log(data);
 		              	$timeout(function() {
 		              		alert("New FxForward Order Submitted ");
-					        $scope.newforwardorder = {};
+					        $scope.newforwardorder = [];
 		              		$state.go('homeforward');
 					        $scope.dataLoading = false;
 					   	}, 3000);
 		            }).error(function () {
 		            	 $scope.dataLoading = false;
 		                alert("Error making new FxForward order");
-		                $scope.newforwardorder = {};
+		                $scope.newforwardorder = [];
 						$state.go('homeforward');
 		            });	
 				}
-	
 	}
 	
 				$scope.$watch("newforwardorder.buysell", function (newval) {
-	               if(newval == 'BUY'){
+					if(newval == undefined){
+						//console.log(newval);
+					}else if(newval == 'BUY'){
 	               		$scope.newforwardorder.buyorderamountccy = $filter('limitTo')($scope.newforwardorder.ccypair,3);
 	               		$scope.newforwardorder.sellorderamountccy = $filter('limitTo')($scope.newforwardorder.ccypair,-3);
-	               }else{
+	               }else if(newval == 'SELL'){
 	               		$scope.newforwardorder.buyorderamountccy = $filter('limitTo')($scope.newforwardorder.ccypair,-3);
 	               		$scope.newforwardorder.sellorderamountccy = $filter('limitTo')($scope.newforwardorder.ccypair,3);
 	               };
 	            }, true);
+			
 	            
 	            $scope.$watch("newforwardorder.frequency", function (newval) {
-	               if(newval == 'Single'){
+	               if(newval == undefined){
+	               	//console.log(newval);
+	               }else if(newval == 'Single'){
 	               		$scope.newforwardorder.nofrequency = 1;
+	               		document.getElementById("nofrequency").disabled = true;
 	               }else{
-	               		$scope.newforwardorder.nofrequency = '';
+	               		//$scope.newforwardorder.nofrequency = '';
+	               		document.getElementById("nofrequency").disabled = false;
 	               };
 	            }, true);
 	            
@@ -1125,13 +1224,15 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 	            }
 	            
 	            $scope.$watch("newforwardorder.mybanks", function(newval) {
-				    if(newval){
-				    	$scope.newforwardorder.bank={};
+	            	if(newval == undefined){
+	            		//console.log(newval);
+	            	}else if(newval){
+				    	//$scope.newforwardorder.bank={};
 				    	ordersService.getmybanks(domain).then(function(d){
 							$scope.banks = d.data.data;
 						})
 				    }else{
-				    	$scope.newforwardorder.bank={};
+				    	//$scope.newforwardorder.bank={};
 				    	ordersService.getbanks().then(function(d){
 							$scope.banks = d.data.data;
 						})
@@ -1140,11 +1241,13 @@ app.controller('newforwardorderCtrl', function($state,$scope,$http,$filter,$time
 	
 });
 
-app.controller('custconfirmations_forwardCtrl', function($scope,ordersService){
+app.controller('custconfirmations_forwardCtrl', function($scope,ordersService,titleService){
 	$scope.toconfirmoffers = [];
-	//$scope.Data.pagetitle = 'FxSpot Confirmations';
+
+	$scope.Title = titleService;
+	$scope.Title.name = "FxSpot Confirmations";
+
 	ordersService.to_confirm_forward(1).then(function(d){
-		//console.log(d.data.data);
 		$scope.toconfirmoffers = d.data.data;
 	})	
 });

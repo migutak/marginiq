@@ -5,7 +5,7 @@ app.constant('AUTH_EVENTS', {
 })
  
 app.constant('API_ENDPOINT', {
-  url: 'http://192.168.79.1:8000/api'
+  url: 'http://localhost:8000/api'
 });
 
 app.run(function ($rootScope, $window, AuthService, AUTH_EVENTS) {
@@ -167,5 +167,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		url : "/editforwardoffer/:offerid",
 		templateUrl : "templates/editforwardoffer.html",
 		controller : 'editforwardofferCtrl'
+	}).state('forwardschedule', {
+		url : "/forwardschedule/:freq/:nofreq/:startdate/:buyorderamountccy/:buyorderamount/:sellorderamountccy/:sellorderamount",
+		templateUrl : "templates/forwardschedulebank.html",
+		controller : 'sheduleCtrl'
 	})
 })

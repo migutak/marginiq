@@ -48,7 +48,7 @@
 				    <div class="form-group">
 				        <label class="col-xs-3 control-label">No of Frequency</label>
 				        <div class="col-xs-5 selectContainer">
-				            <input type="text" class="form-control" ng-model="newforwardorder.nofrequency">
+				            <input type="text" class="form-control" id="nofrequency" ng-model="newforwardorder.nofrequency" required>
 				        </div>
 				    </div>
 				    
@@ -59,7 +59,7 @@
                             	<div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="datepicker" id="startdate" name="startdate" ng-model="newforwardorder.startdate" required/>
+                                <input type="text" class="form-control datepicker" id="startdate" name="startdate" ng-model="newforwardorder.startdate" required/>
                             </div><!-- /.input group -->
 				    	</div>
 				    </div>
@@ -88,11 +88,11 @@
 				    <div class="form-group">
 				    	<label class="col-xs-3 control-label">Select Bank(s)</label>
 				    	<div class="col-xs-4 selectContainer">
-						    <select class="form-control select2" multiple="multiple" data-placeholder="Select Bank(s)" ng-model="newforwardorder.bank">
+						    <select class="form-control select2" multiple="multiple" data-placeholder="Select Bank(s)" ng-model="newforwardorder.bank" required>
 		                      <option ng-repeat="option in banks" value="{{option.bankid}}">{{option.bankname}}</option>
 		                    </select>
 				    	</div>
-				    	<div class="col-xs-3 selectContainer"><input type="checkbox" ng-model="newforwardorder.mybanks" name="mybanks" /><span class="text"> Only my Banks</span></div>
+				    	<div class="col-xs-3 selectContainer"><input type="checkbox" ng-model="newforwardorder.mybanks" name="mybanks" /><span class="text"> My Banks</span></div>
 				    </div>
 				    <!--<div class="form-group">
 				    	<label class="col-xs-3 control-label">Settlement Date</label>
@@ -114,8 +114,8 @@
                     <div class="form-group">
                     <label class="col-xs-3 control-label"></label>
                     	<div class="col-xs-5 selectContainer">
-                    		<a class="btn btn-danger" href="#/">Cancel</a> 
-                    		<a class="btn btn-primary" href="#/forwardschedule/{{newforwardorder.frequency}}/{{newforwardorder.nofrequency}}/{{newforwardorder.startdate}}/{{newforwardorder.buyorderamountccy}} {{newforwardorder.buyorderamount}}">View Schedule</a>
+                    		<a class="btn btn-danger" href="#/">Cancel</a>
+                    		<a class="btn btn-primary" href="#/forwardschedule/{{newforwardorder.frequency}}/{{newforwardorder.nofrequency}}/{{newforwardorder.startdate}}/{{newforwardorder.buyorderamountccy}}/{{newforwardorder.buyorderamount}}/{{newforwardorder.sellorderamountccy}}/{{newforwardorder.sellorderamount}}" ng-click="Test()">View Schedule</a>
                     		<button type="submit" class="btn btn-info" ng-disabled="neworderform.$invalid">Submit</button>
                     		<img ng-if="dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                     	</div>

@@ -58,7 +58,7 @@ app.service('AuthService', function($q, $http,API_ENDPOINT) {
  
   var login = function(user) {
     return $q(function(resolve, reject) {
-      $http.post(API_ENDPOINT.url + '/authenticate', user).then(function(result) {
+      $http.post('/api/authenticate', user).then(function(result) {
         if (result.data.success) {
           storeUserCredentials(result.data.token);
           resolve(result.data.msg);
@@ -1130,5 +1130,9 @@ app.service('titleService', function () {
     return Title;
 });
 
+app.service('tempData', function () {
+     var newforward = {};
+    return newforward;
+});
 
 

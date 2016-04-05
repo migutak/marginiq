@@ -1,7 +1,7 @@
 <!-- Main content -->
 <section class="content">
 
-	<a href="#/newforward">Back</a>
+	<a href="" onclick="goBack()">Back</a>
 
 	<div class="container">          
 	  <table class="table table-striped">
@@ -16,8 +16,8 @@
 	    <tbody>
 	      <tr ng-repeat="schedule in schedules">
 	        <td>{{schedule.frequency}}</td>
-	        <td>{{schedule.buyamount}}</td>
-	        <td>{{schedule.sellamount}}</td>
+	        <td>{{schedule.buyorderamountccy}} {{schedule.buyamount}}</td>
+	        <td>{{schedule.sellorderamountccy}} {{schedule.sellamount}}</td>
 	        <td>{{schedule.startdate}}</td>
 	      </tr>
 	    </tbody>
@@ -26,3 +26,9 @@
 
 
 </section>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>

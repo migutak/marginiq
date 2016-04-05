@@ -723,19 +723,22 @@ app.controller('newmmofferCtrl', function($scope, $stateParams, $filter,$state,$
     }
 });
 
-app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootScope,$timeout,Data,$http,ordersService,$filter){
+app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootScope,$timeout,Data,$http,ordersService,$filter,titleService){
 	var username = window.sessionStorage.getItem('username');
 	var domain = window.sessionStorage.getItem('bankdomain');
 	
 	var orderid = $stateParams.indexid;
 	var indexid = $stateParams.indexid;
-	//$scope.Data = Data;
-	//$scope.Data.pagetitle = 'New Forward Offer';
+	
+	$scope.Title = titleService;
+	$scope.Title.name = "new forward offer";
+	
 	$scope.newforwardoffer = {};
 	
 	
 	ordersService.forwardorder(indexid).then(function(d) {
 	    $scope.newforwardoffer = d.data.data[0];
+	    //console.log($scope.newforwardoffer);
 	    $scope.newforwardoffer.orderindex = d.data.data[0].orderindex;
 	    $scope.newforwardoffer.orderidfk = d.data.data[0].orderid;
 	    $scope.newforwardoffer.offeredby = username;
@@ -744,29 +747,31 @@ app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootS
 	    $scope.newforwardoffer.buyorderamount = d.data.data[0].buyorderamount;
 	    $scope.newforwardoffer.sellorderamount = d.data.data[0].sellorderamount;
 	    $scope.newforwardoffer.buyorderamountccy = d.data.data[0].buyorderamountccy;
-	    $scope.newforwardoffer.sellorderamountccy = d.data.data[0].sellorderamountccy;
-	    
+	    $scope.newforwardoffer.sellorderamountccy = d.data.data[0].sellorderamountccy;	    
 	}); 
 	
 	$scope.fill = function(){
 		
 		if($scope.newforwardoffer.buysellbank == 'BUY' && $scope.newforwardoffer.buyorderamount > 0){
-			$scope.newforwardoffer.finalrate = parseFloat($scope.newforwardoffer.forwardrate) + parseFloat($scope.newforwardoffer.magin/100);
+			$scope.newforwardoffer.finalrate = parseFloat($scope.newforwardoffer.forwardrate) + parseFloat($scope.newforwardoffer.magin/10000);
 			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.buyorderamount/$scope.newforwardoffer.finalrate),2);
 			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,3);
+			$scope.newforwardoffer.sellorderamount = $scope.newforwardoffer.settlementamount;
 		}else if($scope.newforwardoffer.buysellbank == 'BUY' && $scope.newforwardoffer.sellorderamount > 0){
-			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) - parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) - parseFloat($scope.newforwardoffer.magin/10000),2);
 			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.sellorderamount*$scope.newforwardoffer.finalrate),2);
 			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,-3);
-
+			$scope.newforwardoffer.buyorderamount = $scope.newforwardoffer.settlementamount;
 		}else if($scope.newforwardoffer.buysellbank == 'SELL' && $scope.newforwardoffer.sellorderamount > 0){
-			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) + parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) + parseFloat($scope.newforwardoffer.magin/10000),2);
 			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.sellorderamount/$scope.newforwardoffer.finalrate),2);
 			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,3);
+			$scope.newforwardoffer.buyorderamount = $scope.newforwardoffer.settlementamount;
 		}else if($scope.newforwardoffer.buysellbank == 'SELL' && $scope.newforwardoffer.buyorderamount > 0){
-			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) - parseFloat($scope.newforwardoffer.magin/100),2);
+			$scope.newforwardoffer.finalrate = $filter('number')(parseFloat($scope.newforwardoffer.forwardrate) - parseFloat($scope.newforwardoffer.magin/10000),2);
 			$scope.newforwardoffer.settlementamount = $filter('number')(($scope.newforwardoffer.buyorderamount*$scope.newforwardoffer.finalrate),2);
 			$scope.newforwardoffer.settlementamountccy = $filter('limitTo')($scope.newforwardoffer.ccypair,-3);
+			$scope.newforwardoffer.sellorderamount = $scope.newforwardoffer.settlementamount;
 		}
 
 	};
@@ -778,12 +783,12 @@ app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootS
 		              url: './new_forward_offer',
 		              headers: {'Content-Type': 'application/json'},
 		              data:{orderindex:$scope.newforwardoffer.orderindex,orderidfk:$scope.newforwardoffer.orderidfk,spot:$scope.newforwardoffer.forwardrate,magin:$scope.newforwardoffer.magin,finalrate:$scope.newforwardoffer.finalrate,
-		              		settlementdate:$scope.newforwardoffer.settlementdate,offeredby:domain,bankuser:username,settlementamountccy:$scope.newforwardoffer.settlementamountccy,settlementamount:$scope.newforwardoffer.settlementamount,
+		              		settlementdate:$scope.newforwardoffer.startdate,offeredby:domain,bankuser:username,settlementamountccy:$scope.newforwardoffer.settlementamountccy,settlementamount:$scope.newforwardoffer.settlementamount,
 		              		bankcomment:$scope.newforwardoffer.bankcomment,bankuser:username}
 		            }).success(function (data) {
 		            	$timeout(function(){
 		            		$scope.loading = false;
-		            		alert("Forwad Offer Submitted");
+		            		alert("Forwad offer submitted");
 		            		$scope.dataLoading = false;
 		              		$scope.newforwardoffer = {};
 					  		$state.go('homeforward');
@@ -791,15 +796,15 @@ app.controller('newforwardofferCtrl', function($scope,$state,$stateParams,$rootS
 		            }).error(function (error) {
 		                alert("Error when making an offer");
 		                $scope.dataLoading = false;
-		                //$scope.newforwardoffer = {};
-						//$state.go('homeforward');
+		                $scope.newforwardoffer = {};
+						$state.go('homeforward');
 		            });	
 		
-		ordersService.updateforwardorder($scope.newforwardoffer.orderindex).then(function(d){
-			//console.log(d);
-		})
+		ordersService.updateforwardorder($scope.newforwardoffer.orderindex).then(function(d){})
 		            
 	}
+
+	$scope.bookId;
 });
 
 app.controller('acceptedmmoffersCtrl', function($scope,ordersService){
@@ -1336,4 +1341,75 @@ app.controller('editforwardofferCtrl', function($scope,$stateParams,$http,$filte
             }
 	};
 
-})
+});
+
+app.controller('sheduleCtrl', function($scope, $stateParams){
+	var freq = $stateParams.freq;
+	var nofreq = $stateParams.nofreq;
+	var startdate = $stateParams.startdate;
+	var buyorderamount = $stateParams.buyorderamount;
+	var buyorderamountccy = $stateParams.buyorderamountccy;
+	var sellorderamount = $stateParams.sellorderamount;
+	var sellorderamountccy = $stateParams.sellorderamountccy;
+
+	$scope.schedules = [];
+
+
+	for(i=1; i<=nofreq;i++){
+		if(buyorderamount>0){
+			if (freq == 'Monthly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
+				});
+			}else if(freq == 'Weekly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
+				});
+			}else{
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':buyorderamount,
+					'buyorderamountccy':buyorderamountccy,
+					'sellamount':'',
+					'startdate':startdate
+				});
+			}
+		}else{
+			if (freq == 'Monthly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'M').format("Do MMM YYYY")
+				});
+			}else if(freq == 'Weekly'){
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':moment(startdate, "DD-MM-YYYY").add(i-1, 'w').format("Do MMM YYYY")
+				});
+			}else{
+				$scope.schedules.push(
+					{'frequency':freq +' #'+i,
+					'buyamount':'',
+					'sellamount':sellorderamount,
+					'sellorderamountccy':sellorderamountccy,
+					'startdate':startdate
+				});
+			}
+		}
+		
+	}
+});
+
